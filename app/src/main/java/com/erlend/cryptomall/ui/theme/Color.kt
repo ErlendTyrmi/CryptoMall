@@ -1,4 +1,4 @@
-package com.erlend.CryptoMall.ui.theme
+package com.erlend.cryptomall.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -9,4 +9,4 @@ val Teal200 = Color(0xFF03DAC5)
 
 // Custom colors
 
-val SplashYellow = Color(0xfffece5f)
+val backgroundBrown = Color(0xff181510)

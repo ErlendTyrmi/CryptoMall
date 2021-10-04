@@ -1,4 +1,4 @@
-package com.erlend.CryptoMall.ui.theme
+package com.erlend.cryptomall.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
