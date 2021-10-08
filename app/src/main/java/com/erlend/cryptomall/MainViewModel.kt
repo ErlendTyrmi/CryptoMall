@@ -2,10 +2,19 @@ package com.erlend.cryptomall
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.erlend.cryptomall.repo.CoinApi
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val repository: CoinApi
+) : ViewModel() {
 
 
-class MainViewModel : ViewModel() {
+
     private val users: MutableLiveData<List<String>> by lazy {
         MutableLiveData<List<String>>().also {
             loadCurrencies()

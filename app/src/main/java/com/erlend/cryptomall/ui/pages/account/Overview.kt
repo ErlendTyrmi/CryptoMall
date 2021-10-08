@@ -6,10 +6,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.erlend.cryptomall.Splash
 
 // This page shows the "points" (value in dollars) at the top, and a list of currencies.
 // The currencies have present value in $ and change % last 24h.
