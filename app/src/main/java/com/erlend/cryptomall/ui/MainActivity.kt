@@ -9,17 +9,18 @@ import androidx.compose.material.Surface
 import androidx.lifecycle.Observer
 import com.erlend.cryptomall.MainViewModel
 import com.erlend.cryptomall.ui.theme.CryptoMallTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val model: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Example:
-        //model.getCurrencies().observe(this, Observer<List<String>>{ users ->
-           // update UI
-        //})
+        //Test api
+        model.getAssets()
+        model.getAsset("ethereum")
 
         setContent {
             CryptoMallTheme {

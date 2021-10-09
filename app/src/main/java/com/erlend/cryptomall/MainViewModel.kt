@@ -1,40 +1,67 @@
 package com.erlend.cryptomall
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.erlend.cryptomall.repo.CoinApi
+import com.erlend.cryptomall.repo.remote.CoinCapApi
+import com.erlend.cryptomall.repo.entities.Asset
+import com.erlend.cryptomall.repo.entities.Assets
 import dagger.hilt.android.lifecycle.HiltViewModel
+import retrofit2.Call
+import retrofit2.Response
 import javax.inject.Inject
+import retrofit2.Callback
+
+const val TAG = "MainViewModel: "
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
-    private val repository: CoinApi
-) : ViewModel() {
+class MainViewModel @Inject constructor() : ViewModel() {
 
+    val api = CoinCapApi.create()
 
+    fun getAssets() {
+        api.Assets().enqueue(object : Callback<Assets> {
+            override fun onResponse(call: Call<Assets>, response: Response<Assets>) {
+                if (response.code() == 200) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        for (asset in responseBody.data){
+                            Log.d(TAG, asset.id)
+                        }
+                    }
+                }
+            }
 
-    private val users: MutableLiveData<List<String>> by lazy {
-        MutableLiveData<List<String>>().also {
-            loadCurrencies()
-        }
+            override fun onFailure(call: Call<Assets>, t: Throwable) {
+
+            }
+        })
+        // put in room
     }
 
-    fun getCurrencies(): LiveData<List<String>> {
-        return users
+    fun getAsset(id: String) {
+        api.getAsset(id).enqueue(object : Callback<Asset> {
+            override fun onResponse(call: Call<Asset>, response: Response<Asset>) {
+                if (response.code() == 200) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                            Log.d(TAG, responseBody.data.id + ", price: " + responseBody.data.priceUsd)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<Asset>, t: Throwable) {
+
+            }
+        })
+        // put in room
     }
 
-    fun getCurrency(code: String): LiveData<List<String>> {
-        return users
+    fun buyCurrency(code: String, amount: Double){
+
     }
 
-    fun buyCurrency(code: String, amount: Double): LiveData<List<String>> {
-        return users
-    }
+    fun sellCurrency(code: String, amount: Double) {
 
-    fun sellCurrency(code: String, amount: Double): LiveData<List<String>> {
-        return users
     }
 
     private fun loadCurrencies() {
