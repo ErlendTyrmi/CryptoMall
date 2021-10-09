@@ -9,7 +9,7 @@ class CryptoMallApp : Application() {
 
     // Mock environment variables
     companion object {
-        val API_KEY: String = "e13a1a18-b3ac-4419-b9cf-2594ce2a1ca0"
+        const val API_KEY: String = "e13a1a18-b3ac-4419-b9cf-2594ce2a1ca0"
     }
 
     // Called when the application is starting, before any other application objects have been created.
