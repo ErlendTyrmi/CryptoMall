@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import com.erlend.cryptomall.repo.entities.Asset
 import com.erlend.cryptomall.repo.entities.Assets
+import com.erlend.cryptomall.repo.remote.CoinCapStaticApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Response
@@ -14,12 +15,12 @@ import retrofit2.Callback
 const val TAG = "MainViewModel: "
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, coinCapStaticApi: CoinCapStaticApi) : ViewModel() {
 
-    val api = CoinCapApi.create()
+    val api = coinCapApi
 
     fun getAssets() {
-        api.Assets().enqueue(object : Callback<Assets> {
+        api.getAssets().enqueue(object : Callback<Assets> {
             override fun onResponse(call: Call<Assets>, response: Response<Assets>) {
                 if (response.code() == 200) {
                     val responseBody = response.body()

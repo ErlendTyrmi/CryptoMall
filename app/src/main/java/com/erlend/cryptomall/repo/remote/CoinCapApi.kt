@@ -11,12 +11,12 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Path
 
-
+// Getting asset data. See AppModule for base  url
 interface CoinCapApi {
 
     @Headers("Authorization: Bearer ${CryptoMallApp.API_KEY}")
     @GET("assets")
-    fun Assets(
+    fun getAssets(
     ) : Call<Assets>
 
     @Headers("Authorization: Bearer ${CryptoMallApp.API_KEY}")
@@ -24,23 +24,9 @@ interface CoinCapApi {
     fun getAsset(@Path("id") id : String
     ) : Call<Asset>
 
-    //assets/bitcoin/history?interval=d1
     @Headers("Authorization: Bearer ${CryptoMallApp.API_KEY}")
     @GET("assets/{id}/history?interval=d1")
     fun getHistory(@Path("id") id : String
     ) : Call<AssetHistory>
-
-    // Builder
-    companion object {
-        const val BASE_URL = "https://api.coincap.io/v2/"
-
-        fun create() : CoinCapApi {
-            val retrofit = Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(BASE_URL)
-                .build()
-            return retrofit.create(CoinCapApi::class.java)
-        }
-    }
 }
 
