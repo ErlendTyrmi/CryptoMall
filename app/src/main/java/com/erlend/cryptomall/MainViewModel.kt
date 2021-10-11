@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import com.erlend.cryptomall.repo.entities.Asset
 import com.erlend.cryptomall.repo.entities.Assets
-import com.erlend.cryptomall.repo.remote.CoinCapStaticApi
+import com.erlend.cryptomall.repo.local.AssetDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Response
@@ -15,9 +15,10 @@ import retrofit2.Callback
 const val TAG = "MainViewModel: "
 
 @HiltViewModel
-class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, coinCapStaticApi: CoinCapStaticApi) : ViewModel() {
+class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetDao) : ViewModel() {
 
     val api = coinCapApi
+    val room = assetDao
 
     fun getAssets() {
         api.getAssets().enqueue(object : Callback<Assets> {
@@ -27,6 +28,7 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, coinCapStaticApi
                     if (responseBody != null) {
                         for (asset in responseBody.data){
                             Log.d(TAG, asset.id)
+                           room.insert(asset)
                         }
                     }
                 }

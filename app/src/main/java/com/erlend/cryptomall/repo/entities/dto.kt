@@ -1,5 +1,8 @@
 package com.erlend.cryptomall.repo.entities
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 // One Asset
 data class Asset(
     val `data`: Data,
@@ -12,6 +15,7 @@ data class Assets(
     val timestamp: Long
 )
 
+@Entity(tableName = "assets")
 // Asset data
 data class Data(
     val changePercent24Hr: String,
@@ -22,6 +26,7 @@ data class Data(
     val priceUsd: String,
     val rank: String,
     val supply: String,
+    @PrimaryKey
     val symbol: String,
     val volumeUsd24Hr: String,
     val vwap24Hr: String
