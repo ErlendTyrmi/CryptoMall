@@ -44,6 +44,11 @@ object AppModule {
         return assetDatabase.assetDao()
     }
 
+    @Provides
+    fun provideRepository(): Repository{
+        return provideRepository()
+    }
+
     /*// CoinCapStaticApi gets the asset icons
     @Provides
     fun provideCoinCapStaticApi(): CoinCapStaticApi {

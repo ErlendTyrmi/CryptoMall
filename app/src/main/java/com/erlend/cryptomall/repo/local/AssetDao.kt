@@ -12,11 +12,11 @@ interface AssetDao {
     fun insert(asset: Data)
 
     @Query("SELECT * FROM assets")
-    fun getAssets(): LiveData<Asset>
+    fun getAssets(): LiveData<Data>
 
     @Query("SELECT * FROM assets where symbol LIKE :symbol")
-    fun getAsset(symbol: String): LiveData<Asset>
+    fun getAsset(symbol: String): LiveData<Data>
 
     @Update
-    fun update(asset: Asset)
+    fun update(data: Data)
 }
