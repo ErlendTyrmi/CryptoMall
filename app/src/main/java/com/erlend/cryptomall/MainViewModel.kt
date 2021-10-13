@@ -1,12 +1,19 @@
 package com.erlend.cryptomall
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import com.erlend.cryptomall.repo.entities.Asset
 import com.erlend.cryptomall.repo.entities.Assets
+import com.erlend.cryptomall.repo.entities.Data
 import com.erlend.cryptomall.repo.local.AssetDao
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
@@ -19,6 +26,7 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
 
     val api = coinCapApi
     val room = assetDao
+    var assets: List<Data>? = null
 
     fun getAssets() {
         api.getAssets().enqueue(object : Callback<Assets> {
@@ -26,19 +34,20 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
                 if (response.code() == 200) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        for (asset in responseBody.data){
-                            Log.d(TAG, asset.id)
-                           room.insert(asset)
+                        assets = responseBody.data
+                        for (data in responseBody.data) {
+                            Log.d(TAG, data.id)
                         }
+                        if (assets != null)
+                            storeInRoom(assets!!)
                     }
                 }
             }
 
             override fun onFailure(call: Call<Assets>, t: Throwable) {
-
+                Log.d(TAG, "Failed to retrieve data: " + t.localizedMessage)
             }
         })
-        // put in room
     }
 
     fun getAsset(id: String) {
@@ -47,7 +56,7 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
                 if (response.code() == 200) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                            Log.d(TAG, responseBody.data.id + ", price: " + responseBody.data.priceUsd)
+                        Log.d(TAG, responseBody.data.id + ", price: " + responseBody.data.priceUsd)
                     }
                 }
             }
@@ -59,16 +68,12 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
         // put in room
     }
 
-    fun buyCurrency(code: String, amount: Double){
+    fun buyCurrency(code: String, amount: Double) {
 
     }
 
     fun sellCurrency(code: String, amount: Double) {
 
-    }
-
-    private fun loadCurrencies() {
-        // Do an asynchronous operation to fetch all currencies.
     }
 
     private fun loadCurrency(code: String) {
@@ -78,6 +83,24 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
     // Dollars to spend
     private fun loadLiquids() {
         // Do an asynchronous operation to read local liquids in dollars.
+    }
+
+    fun storeInRoom(assets: List<Data>){
+        viewModelScope.launch (Dispatchers.IO){
+            val array: Array<Data> = assets.toTypedArray()
+            room.insert(*array)
+        }
+    }
+
+    fun readFromRoom(){
+        viewModelScope.launch(Dispatchers.IO) {
+            room.getAssets().collect { data ->
+                for (thing in data){
+                    Log.d(TAG, "ROOM: " + thing.name)
+                }
+            }
+
+        }
     }
 }
 

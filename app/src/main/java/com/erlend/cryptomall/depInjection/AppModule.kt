@@ -46,7 +46,7 @@ object AppModule {
 
     @Provides
     fun provideRepository(): Repository{
-        return provideRepository()
+        return provideRepository() // TODO: provide repo
     }
 
     /*// CoinCapStaticApi gets the asset icons
