@@ -1,6 +1,7 @@
 package com.erlend.cryptomall.repo.entities
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 // One Asset
@@ -20,8 +21,8 @@ data class Assets(
 data class Data(
     val changePercent24Hr: String,
     val id: String,
-    val marketCapUsd: String,
-    val maxSupply: String,
+    val marketCapUsd: String?,
+    val maxSupply: String?,
     val name: String,
     val priceUsd: String,
     val rank: String,

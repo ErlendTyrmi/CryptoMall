@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
         //Test api
         model.getAssets()
         model.getAsset("ethereum")
+        model.readFromRoom()
 
         setContent {
             CryptoMallTheme {

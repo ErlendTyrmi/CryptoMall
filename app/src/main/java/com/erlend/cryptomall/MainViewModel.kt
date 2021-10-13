@@ -1,18 +1,23 @@
 package com.erlend.cryptomall
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import com.erlend.cryptomall.repo.entities.Asset
 import com.erlend.cryptomall.repo.entities.Assets
 import com.erlend.cryptomall.repo.entities.Data
 import com.erlend.cryptomall.repo.local.AssetDao
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 import retrofit2.Callback
-import java.lang.System.out
 
 const val TAG = "MainViewModel: "
 
@@ -33,7 +38,8 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
                         for (data in responseBody.data) {
                             Log.d(TAG, data.id)
                         }
-                        //storeData(assets!!)
+                        if (assets != null)
+                            storeInRoom(assets!!)
                     }
                 }
             }
@@ -79,9 +85,22 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
         // Do an asynchronous operation to read local liquids in dollars.
     }
 
-//    fun storeData(assets: List<Data>){
-//        val array: Array<Data> = assets.toTypedArray()
-//        room.insert(*array)
-//    }
+    fun storeInRoom(assets: List<Data>){
+        viewModelScope.launch (Dispatchers.IO){
+            val array: Array<Data> = assets.toTypedArray()
+            room.insert(*array)
+        }
+    }
+
+    fun readFromRoom(){
+        viewModelScope.launch(Dispatchers.IO) {
+            room.getAssets().collect { data ->
+                for (thing in data){
+                    Log.d(TAG, "ROOM: " + thing.name)
+                }
+            }
+
+        }
+    }
 }
 
