@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import com.erlend.cryptomall.repo.entities.Asset
 import com.erlend.cryptomall.repo.entities.Assets
+import com.erlend.cryptomall.repo.entities.Data
 import com.erlend.cryptomall.repo.local.AssetDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 import retrofit2.Callback
+import java.lang.System.out
 
 const val TAG = "MainViewModel: "
 
@@ -19,6 +21,7 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
 
     val api = coinCapApi
     val room = assetDao
+    var assets: List<Data>? = null
 
     fun getAssets() {
         api.getAssets().enqueue(object : Callback<Assets> {
@@ -26,19 +29,19 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
                 if (response.code() == 200) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        for (asset in responseBody.data){
-                            Log.d(TAG, asset.id)
-                           room.insert(asset)
+                        assets = responseBody.data
+                        for (data in responseBody.data) {
+                            Log.d(TAG, data.id)
                         }
+                        //storeData(assets!!)
                     }
                 }
             }
 
             override fun onFailure(call: Call<Assets>, t: Throwable) {
-
+                Log.d(TAG, "Failed to retrieve data: " + t.localizedMessage)
             }
         })
-        // put in room
     }
 
     fun getAsset(id: String) {
@@ -47,7 +50,7 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
                 if (response.code() == 200) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                            Log.d(TAG, responseBody.data.id + ", price: " + responseBody.data.priceUsd)
+                        Log.d(TAG, responseBody.data.id + ", price: " + responseBody.data.priceUsd)
                     }
                 }
             }
@@ -59,16 +62,12 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
         // put in room
     }
 
-    fun buyCurrency(code: String, amount: Double){
+    fun buyCurrency(code: String, amount: Double) {
 
     }
 
     fun sellCurrency(code: String, amount: Double) {
 
-    }
-
-    private fun loadCurrencies() {
-        // Do an asynchronous operation to fetch all currencies.
     }
 
     private fun loadCurrency(code: String) {
@@ -79,5 +78,10 @@ class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetD
     private fun loadLiquids() {
         // Do an asynchronous operation to read local liquids in dollars.
     }
+
+//    fun storeData(assets: List<Data>){
+//        val array: Array<Data> = assets.toTypedArray()
+//        room.insert(*array)
+//    }
 }
 
