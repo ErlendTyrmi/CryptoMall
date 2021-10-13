@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2021. Erlend Tyrmi
+ */
+
 package com.erlend.cryptomall.repo.local
 
 
@@ -6,18 +10,17 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class TestAssetDao {
-    private lateinit var database : AssetDatabase
+class TestLocalDao {
+    private lateinit var database : LocalDatabase
     @Before
     fun initDb(){
         database = Room.inMemoryDatabaseBuilder(
             InstrumentationRegistry.getInstrumentation().context,
-            AssetDatabase::class.java)
+            LocalDatabase::class.java)
         .build()
 
     }

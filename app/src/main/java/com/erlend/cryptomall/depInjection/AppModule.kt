@@ -1,10 +1,13 @@
+/*
+ * Copyright (c) 2021. Erlend Tyrmi
+ */
+
 package com.erlend.cryptomall.depInjection
 
 import android.content.Context
 import androidx.room.Room
-import com.erlend.cryptomall.repo.Repository
-import com.erlend.cryptomall.repo.local.AssetDao
-import com.erlend.cryptomall.repo.local.AssetDatabase
+import com.erlend.cryptomall.repo.local.LocalDao
+import com.erlend.cryptomall.repo.local.LocalDatabase
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import dagger.Module
 import dagger.Provides
@@ -31,23 +34,19 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAssetDatabase(@ApplicationContext appContext: Context): AssetDatabase {
+    fun provideAssetDatabase(@ApplicationContext appContext: Context): LocalDatabase {
         return Room.databaseBuilder(
             appContext,
-            AssetDatabase::class.java,
+            LocalDatabase::class.java,
             "roomAssetDb"
         ).build()
     }
 
     @Provides
-    fun provideAssetDao(assetDatabase: AssetDatabase): AssetDao {
-        return assetDatabase.assetDao()
+    fun provideAssetDao(localDatabase: LocalDatabase): LocalDao {
+        return localDatabase.localDao()
     }
 
-    @Provides
-    fun provideRepository(): Repository{
-        return provideRepository() // TODO: provide repo
-    }
 
     /*// CoinCapStaticApi gets the asset icons
     @Provides
@@ -66,8 +65,6 @@ object AppModule {
             .crossfade(true)
             .build()
     }*/
-
-
 }
 
 

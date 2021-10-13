@@ -1,3 +1,7 @@
+<!--
+  ~ Copyright (c) 2021. Erlend Tyrmi
+  -->
+
 <resources>
     <string name="app_name">CryptoMall</string>
 </resources>

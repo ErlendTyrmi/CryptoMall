@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2021. Erlend Tyrmi
+ */
+
 package com.erlend.cryptomall.ui.theme
 
 import androidx.compose.material.Typography

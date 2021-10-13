@@ -1,106 +1,148 @@
+/*
+ * Copyright (c) 2021. Erlend Tyrmi
+ */
+
 package com.erlend.cryptomall
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.erlend.cryptomall.model.dto.toAsset
+import com.erlend.cryptomall.model.entities.*
+import com.erlend.cryptomall.repo.local.LocalDao
 import com.erlend.cryptomall.repo.remote.CoinCapApi
-import com.erlend.cryptomall.repo.entities.Asset
-import com.erlend.cryptomall.repo.entities.Assets
-import com.erlend.cryptomall.repo.entities.Data
-import com.erlend.cryptomall.repo.local.AssetDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import javax.inject.Inject
-import retrofit2.Callback
 
 const val TAG = "MainViewModel: "
 
 @HiltViewModel
-class MainViewModel @Inject constructor(coinCapApi: CoinCapApi, assetDao: AssetDao) : ViewModel() {
+class MainViewModel @Inject constructor(// Repos
+    private val api: CoinCapApi, val db: LocalDao
+) : ViewModel() {
 
-    val api = coinCapApi
-    val room = assetDao
-    var assets: List<Data>? = null
+    // Flow - Asset list screen 2
+    // Note: Back button should close the app
+    // Nav from here to
 
+    // Get assets and store in room on page refresh
     fun getAssets() {
-        api.getAssets().enqueue(object : Callback<Assets> {
-            override fun onResponse(call: Call<Assets>, response: Response<Assets>) {
-                if (response.code() == 200) {
-                    val responseBody = response.body()
-                    if (responseBody != null) {
-                        assets = responseBody.data
-                        for (data in responseBody.data) {
-                            Log.d(TAG, data.id)
+        api.getAssets().enqueue(object : Callback<AssetDtoListServerResponse> {
+            override fun onResponse(
+                call: Call<AssetDtoListServerResponse>,
+                response: Response<AssetDtoListServerResponse>
+            ) {
+                if (response.code() == 200 && response.body() != null) {
+                    val responseBody = response.body()!!
+                    viewModelScope.launch(Dispatchers.IO) {
+                        responseBody.data.forEach {
+                            Log.d(TAG, it.symbol)
+                            db.insertAssets(it.toAsset())
                         }
-                        if (assets != null)
-                            storeInRoom(assets!!)
+                        db.getAssets().collect { Log.d(TAG, it.toString()) }
                     }
                 }
             }
-
-            override fun onFailure(call: Call<Assets>, t: Throwable) {
+            override fun onFailure(call: Call<AssetDtoListServerResponse>, t: Throwable) {
                 Log.d(TAG, "Failed to retrieve data: " + t.localizedMessage)
             }
         })
     }
 
+
+    // Get icons
+    fun getIcons(){
+    }
+
+    // check if account exists and is initiated
+    fun checkAccountInit(){
+
+    }
+
+    // db is null or account is null? Create and add 10.000
+    fun setupAccount( ) : Int{
+        return 0
+    }
+
+    // Sum up points from all owned assets, in USD
+    fun getSumPoints( accountId: String ){
+    }
+
+    // Flow screen 3 - Owned assets overview
+    // Note: has "transactions" button
+
+    // Show a list of specified owned assets by largest sum in USD
+    fun getOwnedAssets(){
+    }
+
+    // Flow screen 7 - Transactions
+    // Note: Back button to 3
+
+    fun getTransactions() : List<AssetTransaction> {
+        return listOf(AssetTransaction("", 2, 1.2, 33.1, "", ""))
+    }
+
+    // FLow screen 4: Asset page
+    // An asset is clicked and might be traded. Update asset
+    // Buttons to buy and sell visible when action is possible
+
+    //Get updated plain asset
     fun getAsset(id: String) {
-        api.getAsset(id).enqueue(object : Callback<Asset> {
-            override fun onResponse(call: Call<Asset>, response: Response<Asset>) {
-                if (response.code() == 200) {
-                    val responseBody = response.body()
-                    if (responseBody != null) {
-                        Log.d(TAG, responseBody.data.id + ", price: " + responseBody.data.priceUsd)
-                    }
+        api.getAsset(id).enqueue(object : Callback<AssetDtoServerResponse> {
+            override fun onResponse(
+                call: Call<AssetDtoServerResponse>,
+                response: Response<AssetDtoServerResponse>
+            ) {
+                if (response.code() == 200 && response.body() != null) {
+                    val responseBody = response.body()!!
+
+                        //db.insertAssets(responseBody.data.toAsset())
+
                 }
             }
 
-            override fun onFailure(call: Call<Asset>, t: Throwable) {
-
+            override fun onFailure(call: Call<AssetDtoServerResponse>, t: Throwable) {
+                Log.d(TAG, "Failed to retrieve data: " + t.localizedMessage)
             }
         })
-        // put in room
     }
 
-    fun buyCurrency(code: String, amount: Double) {
 
+    fun getAssetInAccount(symbol: String){
     }
 
-    fun sellCurrency(code: String, amount: Double) {
-
+    // Graph Bonus? Get history asset list and draw
+    fun getAssetHistory(){
     }
 
-    private fun loadCurrency(code: String) {
-        // Do an asynchronous operation to fetch single currency.
+    // FLow screen 5 - Buy
+    // Show dollars left
+    // Enter dollars - update crypto amount
+    // Show error if user enters too much
+    // Back to 4
+
+    // Click changes account value og dollars and said crypto
+    fun buy( symbol: String, amount: Double, paid: Double ){
+        // Atomic:
+        // Account dollars go down
+        // [symbol] goes up
     }
 
-    // Dollars to spend
-    private fun loadLiquids() {
-        // Do an asynchronous operation to read local liquids in dollars.
-    }
+    // Flow Screen 6 Sell
+    // Enter crypto, update dollars
+    // Same layout as 5
+    // Also back to 4, much reuse here
 
-    fun storeInRoom(assets: List<Data>){
-        viewModelScope.launch (Dispatchers.IO){
-            val array: Array<Data> = assets.toTypedArray()
-            room.insert(*array)
-        }
-    }
-
-    fun readFromRoom(){
-        viewModelScope.launch(Dispatchers.IO) {
-            room.getAssets().collect { data ->
-                for (thing in data){
-                    Log.d(TAG, "ROOM: " + thing.name)
-                }
-            }
-
-        }
+    fun sell(symbol: String, amount: Double, earned: Double){
+        // Atomic:
+        // Dollars go down
+        // Symbol goes up
     }
 }
 

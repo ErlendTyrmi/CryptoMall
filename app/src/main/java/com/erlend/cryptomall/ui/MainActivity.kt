@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2021. Erlend Tyrmi
+ */
+
 package com.erlend.cryptomall.ui
 
 import android.os.Bundle
@@ -21,7 +25,7 @@ class MainActivity : ComponentActivity() {
         //Test api
         model.getAssets()
         model.getAsset("ethereum")
-        model.readFromRoom()
+
 
         setContent {
             CryptoMallTheme {
