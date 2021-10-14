@@ -2,11 +2,11 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.viewModels
+package com.erlend.cryptomall.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
-import com.erlend.cryptomall.repo.local.LocalDao
-import com.erlend.cryptomall.repo.remote.CoinCapApi
+import com.erlend.cryptomall.data.repo.local.LocalDao
+import com.erlend.cryptomall.data.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

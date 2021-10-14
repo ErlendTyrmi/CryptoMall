@@ -12,7 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.erlend.cryptomall.viewModels.AssetViewModel
+import com.erlend.cryptomall.presentation.viewModels.AssetViewModel
 
 // This page shows the "points" (value in dollars) at the top, and a list of currencies.
 // The currencies have present value in $ and change % last 24h.

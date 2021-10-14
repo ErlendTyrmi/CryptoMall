@@ -2,10 +2,13 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.model.entities
+package com.erlend.cryptomall.domain.model.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
+// Consider: @ColumnInfo(name = "like_this")
+// Needs test env first...
 
 @Entity(tableName = "asset")
 data class Asset(

@@ -2,22 +2,13 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.viewModels
+package com.erlend.cryptomall.presentation.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.erlend.cryptomall.model.dto.toAsset
-import com.erlend.cryptomall.model.entities.*
-import com.erlend.cryptomall.repo.local.LocalDao
-import com.erlend.cryptomall.repo.remote.CoinCapApi
+import com.erlend.cryptomall.domain.model.entities.*
+import com.erlend.cryptomall.data.repo.local.LocalDao
+import com.erlend.cryptomall.data.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 
 const val TAG = "MainViewModel: "

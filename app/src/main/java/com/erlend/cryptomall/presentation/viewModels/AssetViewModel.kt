@@ -2,21 +2,19 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.viewModels
+package com.erlend.cryptomall.presentation.viewModels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erlend.cryptomall.model.dto.toAsset
-import com.erlend.cryptomall.model.entities.Asset
-import com.erlend.cryptomall.model.entities.AssetDtoListServerResponse
-import com.erlend.cryptomall.model.entities.AssetDtoServerResponse
-import com.erlend.cryptomall.repo.local.LocalDao
-import com.erlend.cryptomall.repo.remote.CoinCapApi
+import com.erlend.cryptomall.data.dto.toAsset
+import com.erlend.cryptomall.domain.model.entities.Asset
+import com.erlend.cryptomall.domain.model.entities.AssetDtoListServerResponse
+import com.erlend.cryptomall.domain.model.entities.AssetDtoServerResponse
+import com.erlend.cryptomall.data.repo.local.LocalDao
+import com.erlend.cryptomall.data.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,11 +27,11 @@ class AssetViewModel @Inject constructor(
     val db: LocalDao
 ) : ViewModel() {
 
-    fun getAssetsDb(): Flow<List<Asset>> {
+    suspend fun getAssetsDb(): List<Asset> {
         return db.getAssets()
     }
 
-    fun refreshAssets(): Flow<List<Asset>> {
+    suspend fun refreshAssets(): List<Asset> {
         return db.getAssets()
     }
 
@@ -51,7 +49,9 @@ class AssetViewModel @Inject constructor(
                             Log.d(TAG, it.symbol)
                             db.insertAssets(it.toAsset())
                         }
-                        db.getAssets().collect { Log.d(TAG, it.toString()) }
+                        db.getAssets().forEach{
+                            Log.d(TAG, it.name + " " + it.priceUsd)
+                        }
                     }
                 }
             }
@@ -71,7 +71,9 @@ class AssetViewModel @Inject constructor(
             ) {
                 if (response.code() == 200 && response.body() != null) {
                     val responseBody = response.body()!!
-                    db.insertAssets(responseBody.data.toAsset())
+                    viewModelScope.launch(Dispatchers.IO) {
+                        db.insertAssets(responseBody.data.toAsset())
+                    }
                 }
             }
 
@@ -80,8 +82,6 @@ class AssetViewModel @Inject constructor(
             }
         })
     }
-
-
 
     // Get icons
     fun getIcons(){

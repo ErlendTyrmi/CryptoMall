@@ -6,9 +6,9 @@ package com.erlend.cryptomall.di
 
 import android.content.Context
 import androidx.room.Room
-import com.erlend.cryptomall.repo.local.LocalDao
-import com.erlend.cryptomall.repo.local.LocalDatabase
-import com.erlend.cryptomall.repo.remote.CoinCapApi
+import com.erlend.cryptomall.data.repo.local.LocalDao
+import com.erlend.cryptomall.data.repo.local.LocalDatabase
+import com.erlend.cryptomall.data.repo.remote.CoinCapApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

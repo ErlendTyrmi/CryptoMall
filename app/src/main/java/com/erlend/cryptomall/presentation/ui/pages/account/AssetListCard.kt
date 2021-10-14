@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.erlend.cryptomall.model.entities.Asset
+import com.erlend.cryptomall.domain.model.entities.Asset
 
 
 @Composable

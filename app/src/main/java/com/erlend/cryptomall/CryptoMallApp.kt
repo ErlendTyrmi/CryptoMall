@@ -27,11 +27,6 @@ class CryptoMallApp : Application(), ImageLoaderFactory {
             .build()
     }
 
-    // Mock environment variables
-    companion object {
-        const val API_KEY: String = "e13a1a18-b3ac-4419-b9cf-2594ce2a1ca0"
-    }
-
     // Called when the application is starting, before any other application objects have been created.
     // Overriding this method is totally optional!
     override fun onCreate() {
