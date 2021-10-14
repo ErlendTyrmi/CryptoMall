@@ -6,15 +6,26 @@ package com.erlend.cryptomall.repo.local
 
 import androidx.room.*
 import com.erlend.cryptomall.model.entities.Asset
+import com.erlend.cryptomall.model.entities.AssetAmount
+import com.erlend.cryptomall.model.entities.AssetTransaction
+import com.erlend.cryptomall.model.entities.CryptoMallAccount
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalDao {
 
-    // Assets (cryptocurrency data)
+    // Account
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun insertAccount(account: CryptoMallAccount)
+
+    @Query("SELECT * FROM account LIMIT 1")
+    fun getAccount(): CryptoMallAccount
+
+    // Assets
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAssets(vararg asset: Asset)
+    fun insertAssets(asset: Asset)
 
     @Query("SELECT * FROM asset ORDER BY changePercent24Hr DESC")
     fun getAssets(): Flow<List<Asset>>
@@ -22,15 +33,25 @@ interface LocalDao {
     @Query("SELECT * FROM asset where symbol LIKE :symbol")
     fun getAsset(symbol: String): Flow<Asset>
 
-    @Update
-    fun updateAsset(asset: Asset)
+    // Asset Ownership
 
-    // Account
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertOwnedAsset(assetAmount: AssetAmount)
 
-    /*@Insert(onConflict = OnConflictStrategy.ABORT)
-    fun insertAccount(account: CryptoMallAccount)
+    @Query("SELECT * FROM asset_amount INNER JOIN asset ON assetSymbol = symbol & symbol LIKE :symbol WHERE accountId LIKE :accountId")
+    fun getOwnedAsset(accountId: String, symbol: String): Flow<List<AssetAmount>>
 
-    @Query("SELECT * FROM account LIMIT 1")
-    fun getAccount(): CryptoMallAccount*/
+    @Query("SELECT * FROM asset_amount INNER JOIN asset ON assetSymbol = symbol WHERE accountId LIKE :accountId")
+    fun getOwnedAssets(accountId: String): Flow<List<AssetAmount>>
 
+    @Delete
+    fun deleteOwnedAsset(assetAmount: AssetAmount)
+
+    // Asset Transactions
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertTransaction(AssetTransaction: AssetTransaction)
+
+    @Query("SELECT * FROM asset_transaction WHERE accountId LIKE :accountId")
+    fun getTransactions(accountId: String): Flow<List<AssetTransaction>>
 }

@@ -13,7 +13,6 @@ import androidx.room.PrimaryKey
 data class CryptoMallAccount(
     @PrimaryKey
     val accountId: Int = 0, // Only allow one account
-    val accountInitiated: Boolean = false,
 )
 
 // Balance
@@ -25,7 +24,7 @@ data class AssetAmount(
 )
 
 // Transactions
-@Entity(tableName = "transaction", primaryKeys = ["accountId", "timestamp"])
+@Entity(tableName = "asset_transaction", primaryKeys = ["accountId", "timestamp"])
 data class AssetTransaction(
     val accountId : String,
     val timestamp: Long,

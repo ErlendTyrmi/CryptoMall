@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.depInjection
+package com.erlend.cryptomall.di
 
 import android.content.Context
 import androidx.room.Room
