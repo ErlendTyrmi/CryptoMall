@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.data.dto
+package com.erlend.cryptomall.repo.dto
 
 import com.erlend.cryptomall.domain.model.entities.Asset
 import com.erlend.cryptomall.domain.model.entities.Data

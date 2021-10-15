@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.presentation.ui.pages
+package com.erlend.cryptomall.presentation.ui.composables
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.erlend.cryptomall.presentation.ui.pages.account.AccountTopBar
+import com.erlend.cryptomall.presentation.ui.composables.account.AccountTopBar
 
 // User points in header (copy from Overview!)
 // How user points are calculated

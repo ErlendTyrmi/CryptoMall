@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.presentation.ui.pages
+package com.erlend.cryptomall.presentation.ui.composables
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,12 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-// Sell button, anter a float to sell
-// Dollars earned auto update
-// Subpage of Currency
+// Icon name symbol (abbrev. eg. BTC) rate in header
+// Owned amount and dollar value of this
+// Buy, sell
+// Optional: Graph of fluctuations last 24h/week
 
 @Composable
-fun Sell(){
+fun Currency(){
     Box(modifier = Modifier.fillMaxSize()){
         Text(text = "Currency here!", modifier = Modifier.align(Alignment.Center))
     }

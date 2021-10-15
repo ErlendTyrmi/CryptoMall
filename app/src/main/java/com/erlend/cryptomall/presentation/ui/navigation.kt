@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.erlend.cryptomall.presentation.ui.pages.account.Overview
-import com.erlend.cryptomall.presentation.ui.pages.Splash
+import com.erlend.cryptomall.presentation.ui.composables.account.Overview
+import com.erlend.cryptomall.presentation.ui.composables.Splash
 import com.erlend.cryptomall.presentation.viewModels.AssetViewModel
 
 @Composable

@@ -6,8 +6,8 @@ package com.erlend.cryptomall.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
 import com.erlend.cryptomall.domain.model.entities.*
-import com.erlend.cryptomall.data.repo.local.LocalDao
-import com.erlend.cryptomall.data.repo.remote.CoinCapApi
+import com.erlend.cryptomall.repo.local.LocalDao
+import com.erlend.cryptomall.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -28,10 +28,7 @@ class MainViewModel @Inject constructor(
         // This is in assetviewmodel
     }
 
-
-    // Get icons
-    fun getIcons(){
-    }
+    // Get icons from coil anywhere
 
     // check if account exists and is initiated
     fun checkAccountInit(){
@@ -67,7 +64,7 @@ class MainViewModel @Inject constructor(
 
     //Get updated plain asset
     fun getAsset(id: String) {
-        // This is in assetviewmodel
+        // This is in assetViewModel
     }
 
 

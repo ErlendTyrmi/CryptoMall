@@ -2,9 +2,8 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.data.repo.remote
+package com.erlend.cryptomall.repo.remote
 
-import com.erlend.cryptomall.CryptoMallApp
 import com.erlend.cryptomall.common.Constants.API_KEY
 import com.erlend.cryptomall.domain.model.entities.AssetDtoServerResponse
 import retrofit2.Call

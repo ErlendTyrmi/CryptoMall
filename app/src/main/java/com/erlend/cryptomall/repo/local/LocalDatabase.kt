@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.data.repo.local
+package com.erlend.cryptomall.repo.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

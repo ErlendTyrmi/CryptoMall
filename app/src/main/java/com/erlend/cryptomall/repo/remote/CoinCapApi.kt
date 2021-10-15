@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.data.repo.remote
+package com.erlend.cryptomall.repo.remote
 
 import com.erlend.cryptomall.common.Constants.API_KEY
 import com.erlend.cryptomall.domain.model.entities.AssetDtoServerResponse
@@ -18,17 +18,17 @@ interface CoinCapApi {
 
     @Headers("Authorization: Bearer $API_KEY")
     @GET("assets")
-    fun getAssets(
+    suspend fun getAssets(
     ) : Call<AssetDtoListServerResponse>
 
     @Headers("Authorization: Bearer $API_KEY")
     @GET("assets/{id}")
-    fun getAsset(@Path("id") id : String
+    suspend fun getAsset(@Path("id") id : String
     ) : Call<AssetDtoServerResponse>
 
     @Headers("Authorization: Bearer $API_KEY")
     @GET("assets/{id}/history?interval=d1")
-    fun getHistory(@Path("id") id : String
+    suspend fun getHistory(@Path("id") id : String
     ) : Call<RemoteAssetHistory>
 }
 
