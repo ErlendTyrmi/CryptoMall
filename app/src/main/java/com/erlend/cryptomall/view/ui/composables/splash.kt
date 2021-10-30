@@ -20,7 +20,7 @@ import kotlinx.coroutines.delay
 fun Splash(navController: NavController) {
     LaunchedEffect(key1 = true){
         delay(800L)
-        navController.navigate("start")
+        navController.navigate("overview")
     }
     Box(modifier = Modifier.fillMaxSize()){
         Image(

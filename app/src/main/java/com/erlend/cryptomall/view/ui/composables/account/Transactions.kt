@@ -11,13 +11,15 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import com.erlend.cryptomall.view.ui.composables.account.AccountTopBar
+import com.erlend.cryptomall.view.viewModels.AssetViewModel
 
 // Show all transactions made, date bought for $/ sold for $,
 // Subpage of overview
 
 @Composable
-fun Transactions(){
+fun Transactions(navController: NavHostController, assetModel: AssetViewModel) {
     Column {
         AccountTopBar()
         Box(modifier = Modifier.fillMaxSize()){

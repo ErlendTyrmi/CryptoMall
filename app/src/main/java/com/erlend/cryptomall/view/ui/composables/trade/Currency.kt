@@ -10,6 +10,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import com.erlend.cryptomall.view.viewModels.TradeViewModel
 
 // Icon name symbol (abbrev. eg. BTC) rate in header
 // Owned amount and dollar value of this
@@ -17,7 +19,7 @@ import androidx.compose.ui.Modifier
 // Optional: Graph of fluctuations last 24h/week
 
 @Composable
-fun Currency(){
+fun Currency(navController: NavHostController, tradeModel: TradeViewModel) {
     Box(modifier = Modifier.fillMaxSize()){
         Text(text = "Currency here!", modifier = Modifier.align(Alignment.Center))
     }

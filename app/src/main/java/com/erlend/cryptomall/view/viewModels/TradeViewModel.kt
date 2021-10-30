@@ -11,7 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class AccountViewModel @Inject constructor(
+class TradeViewModel @Inject constructor(
     private val api: CoinCapApi,
     val db: LocalDao
 ) : ViewModel() {

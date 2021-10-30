@@ -4,19 +4,16 @@
 
 package com.erlend.cryptomall.view.ui.composables.account
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import com.erlend.cryptomall.domain.model.entities.Asset
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
 
@@ -27,9 +24,14 @@ import com.erlend.cryptomall.view.viewModels.AssetViewModel
 // Icons @ https://static.coincap.io/assets/icons/btc@2x.png
 
 @Composable
-fun Overview(assetModel: AssetViewModel) {
+fun Overview(navController: NavHostController, assetModel: AssetViewModel) {
 
     val assets by assetModel.getAssetsLocal().observeAsState()
+
+    // onClick for the asset list, taking symbol as arg
+    val onClickAsset: (String) -> Unit = {
+        navController.navigate("currency/$it")
+    }
 
     // DEBUG
     // Log.d("overview", assets.toString())
@@ -37,17 +39,17 @@ fun Overview(assetModel: AssetViewModel) {
     Column {
         AccountTopBar()
         Box(modifier = Modifier.fillMaxSize()) {
-            MessageList(assets!!)
+            MessageList(assets!!, onClickAsset)
         }
 
     }
 }
 
 @Composable
-fun MessageList(assets: List<Asset>) {
+fun MessageList(assets: List<Asset>, onClick: (String) -> Unit) {
     LazyColumn {
         items(assets) { ass ->
-            AssetListCard(ass)
+            AssetListCard(ass, onClick)
         }
     }
 }
