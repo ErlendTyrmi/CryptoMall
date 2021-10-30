@@ -6,6 +6,7 @@ package com.erlend.cryptomall.view.ui.composables.account
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,8 +19,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AccountTopBar(){
-    Box (modifier = Modifier.background(Color.Black).padding(8.dp),){
-        Text(text = "Top bar for account pages!", color = Color.White, modifier = Modifier.align(Alignment.Center))
+    Box (modifier = Modifier.padding(8.dp).fillMaxWidth(),){
+        Text(text = "Top bar for account pages!", modifier = Modifier.align(Alignment.Center))
     }
 }
 

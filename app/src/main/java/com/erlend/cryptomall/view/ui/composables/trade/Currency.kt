@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.view.ui.composables
+package com.erlend.cryptomall.view.ui.composables.trade
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

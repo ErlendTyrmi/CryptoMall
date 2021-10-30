@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.erlend.cryptomall.domain.model.entities.Asset
@@ -23,6 +25,7 @@ import com.erlend.cryptomall.view.viewModels.AssetViewModel
 // Click currency to see "Currency"
 // Icons @ https://static.coincap.io/assets/icons/btc@2x.png
 
+@ExperimentalComposeUiApi
 @Composable
 fun Overview(navController: NavHostController, assetViewModel: AssetViewModel) {
 

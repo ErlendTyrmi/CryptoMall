@@ -2,19 +2,25 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.view.ui
+package com.erlend.cryptomall.view.ui.composables
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.erlend.cryptomall.view.ui.composables.*
 import com.erlend.cryptomall.view.ui.composables.account.Overview
+import com.erlend.cryptomall.view.ui.composables.account.Portfolio
+import com.erlend.cryptomall.view.ui.composables.account.Transactions
+import com.erlend.cryptomall.view.ui.composables.trade.Buy
+import com.erlend.cryptomall.view.ui.composables.trade.Currency
+import com.erlend.cryptomall.view.ui.composables.trade.Sell
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
 import com.erlend.cryptomall.view.viewModels.MainViewModel
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 
+@ExperimentalComposeUiApi
 @Composable
 fun NavHost(
     navController: NavController,

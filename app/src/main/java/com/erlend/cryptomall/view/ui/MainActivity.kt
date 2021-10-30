@@ -10,7 +10,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.compose.rememberNavController
+import com.erlend.cryptomall.view.ui.composables.NavHost
 
 import com.erlend.cryptomall.view.ui.theme.CryptoMallTheme
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
@@ -24,6 +26,7 @@ class MainActivity : ComponentActivity() {
     private val assetModel: AssetViewModel by viewModels()
     private val tradeModel: TradeViewModel by viewModels()
 
+    @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
