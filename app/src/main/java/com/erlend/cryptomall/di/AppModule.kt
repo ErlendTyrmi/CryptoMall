@@ -46,25 +46,6 @@ object AppModule {
     fun provideAssetDao(localDatabase: LocalDatabase): LocalDao {
         return localDatabase.localDao()
     }
-
-
-    /*// CoinCapStaticApi gets the asset icons
-    @Provides
-    fun provideCoinCapStaticApi(): CoinCapStaticApi {
-        return Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://static.coincap.io/")
-            .build().create(CoinCapStaticApi::class.java)
-    }*/
-
-    /*// CoinCapStaticApi gets the asset icons DEFINED IN APPLICATION CLASS
-    @Provides
-    fun provideImageLoader(context: Context): ImageLoader {
-        return ImageLoader.Builder(context)
-            .availableMemoryPercentage(0.25)
-            .crossfade(true)
-            .build()
-    }*/
 }
 
 
