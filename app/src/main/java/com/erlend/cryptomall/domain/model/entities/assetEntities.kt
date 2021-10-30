@@ -18,6 +18,7 @@ data class Asset(
     val priceUsd: String,
     @PrimaryKey
     val symbol: String,
+    val rank: String,
 )
 
 @Entity(tableName = "history_asset")

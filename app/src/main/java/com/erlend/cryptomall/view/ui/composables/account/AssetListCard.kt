@@ -6,7 +6,6 @@ package com.erlend.cryptomall.view.ui.composables.account
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +17,7 @@ import com.erlend.cryptomall.domain.model.entities.Asset
 
 @Composable
 fun AssetListCard(
-    asset: Asset = Asset("_", "_", "_", "_", "_"),
+    asset: Asset = Asset("_", "_", "_", "_", "_", "_"),
     onClick: (String) -> Unit,
 ) {
     Row(

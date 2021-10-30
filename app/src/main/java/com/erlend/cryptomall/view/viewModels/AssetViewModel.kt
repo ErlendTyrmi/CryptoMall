@@ -5,6 +5,8 @@
 package com.erlend.cryptomall.view.viewModels
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,12 +32,17 @@ class AssetViewModel @Inject constructor(
     private val api: CoinCapApi,
     val db: LocalDao
 ) : ViewModel() {
+
     private val tag = "AssetViewModel"
 
     //region Livedata (State)
+    val assetsQuery = mutableStateOf("")
 
-    // Option 1 of binding to UI: Collect the flow and throw into a MutableLiveData
-    private val assets = MutableLiveData(listOf<Asset>(Asset("_", "_", "_", "_", "_")))
+    fun getQuery(): MutableState<String> {
+        return assetsQuery
+    }
+
+    private val assets = MutableLiveData(listOf<Asset>(Asset("_", "_", "_", "_", "_", "_")))
 
     init {
         // Pull assets from remote, store in local
@@ -47,15 +54,12 @@ class AssetViewModel @Inject constructor(
         // Get assets from local, observe as LiveData
         viewModelScope.launch {
             db.getAssets().collect { assets.value = it }
-            /*db.getAssets().collect {
-                Log.d(tag, "Collected from room. Showing first in list: " + it[0].name)
-            }*/
         }
     }
 
     //endregion
 
-    // Local DB
+    // Local DB - Flow to MutableLiveData
     fun getAssetsLocal(): MutableLiveData<List<Asset>> {
         return assets
     }
@@ -111,5 +115,9 @@ class AssetViewModel @Inject constructor(
                 }
             })
         }
+    }
+
+    fun onQueryChanged(it: Any) {
+
     }
 }

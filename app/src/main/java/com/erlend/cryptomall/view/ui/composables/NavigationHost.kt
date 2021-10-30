@@ -34,7 +34,7 @@ fun NavHost(
 
         composable(route = "overview"){
             Overview(navController = navController,
-                assetModel = assetViewModel)
+                assetViewModel = assetViewModel)
         }
         composable(route = "portfolio"){
             Transactions(navController = navController,

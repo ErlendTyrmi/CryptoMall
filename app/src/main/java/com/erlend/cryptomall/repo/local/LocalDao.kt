@@ -27,8 +27,11 @@ interface LocalDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAssets(asset: Asset)
 
-    @Query("SELECT * FROM asset ORDER BY changePercent24Hr DESC")
+    @Query("SELECT * FROM asset ORDER BY rank DESC")
     fun getAssets(): Flow<List<Asset>>
+
+    @Query("SELECT * FROM asset WHERE name like :search OR symbol LIKE :search ORDER BY rank DESC")
+    fun searchAssets(search: String): Flow<List<Asset>>
 
     @Query("SELECT * FROM asset where symbol LIKE :symbol")
     fun getAsset(symbol: String): Flow<Asset>

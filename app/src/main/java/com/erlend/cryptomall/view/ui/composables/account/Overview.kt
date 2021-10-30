@@ -24,9 +24,10 @@ import com.erlend.cryptomall.view.viewModels.AssetViewModel
 // Icons @ https://static.coincap.io/assets/icons/btc@2x.png
 
 @Composable
-fun Overview(navController: NavHostController, assetModel: AssetViewModel) {
+fun Overview(navController: NavHostController, assetViewModel: AssetViewModel) {
 
-    val assets by assetModel.getAssetsLocal().observeAsState()
+    val assets by assetViewModel.getAssetsLocal().observeAsState()
+    val query by assetViewModel.assetsQuery
 
     // onClick for the asset list, taking symbol as arg
     val onClickAsset: (String) -> Unit = {
@@ -38,15 +39,19 @@ fun Overview(navController: NavHostController, assetModel: AssetViewModel) {
 
     Column {
         AccountTopBar()
+        AssetSearchBar(assetViewModel = assetViewModel)
         Box(modifier = Modifier.fillMaxSize()) {
-            MessageList(assets!!, onClickAsset)
+            MessageList(
+                assets!!.filter { it.name.contains(query, ignoreCase = true) || query == ""},
+                onClickAsset
+            )
         }
-
     }
 }
 
 @Composable
 fun MessageList(assets: List<Asset>, onClick: (String) -> Unit) {
+
     LazyColumn {
         items(assets) { ass ->
             AssetListCard(ass, onClick)
