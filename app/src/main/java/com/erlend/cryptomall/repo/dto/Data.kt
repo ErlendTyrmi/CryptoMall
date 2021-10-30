@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.domain.model.entities
+package com.erlend.cryptomall.repo.dto
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -17,7 +17,7 @@ data class AssetDtoServerResponse(
 
 // Asset list response
 data class AssetDtoListServerResponse(
-    val `data`: List<Data>,
+    val data: List<Data>,
     val timestamp: Long
 )
 
@@ -40,7 +40,7 @@ data class Data(
 
 // History response
 data class RemoteAssetHistory(
-    val `data`: List<Data>,
+    val data: List<Data>,
     val timestamp: Long
 )
 

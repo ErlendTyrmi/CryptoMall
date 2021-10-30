@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.presentation.ui
+package com.erlend.cryptomall.view.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,11 +10,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.lifecycle.viewmodel.compose.viewModel
 
-import com.erlend.cryptomall.presentation.ui.theme.CryptoMallTheme
-import com.erlend.cryptomall.presentation.viewModels.AssetViewModel
-import com.erlend.cryptomall.presentation.viewModels.MainViewModel
+import com.erlend.cryptomall.view.ui.theme.CryptoMallTheme
+import com.erlend.cryptomall.view.viewModels.AssetViewModel
+import com.erlend.cryptomall.view.viewModels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,8 +25,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         //Test api
-        assetModel.getAssets()
-        assetModel.getAsset("ethereum")
+        assetModel.pullAssetsRemote()
+        assetModel.pullAssetRemote("ethereum")
 
 
         setContent {

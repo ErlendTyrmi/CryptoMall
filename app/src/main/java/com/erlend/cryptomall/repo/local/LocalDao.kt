@@ -9,6 +9,7 @@ import com.erlend.cryptomall.domain.model.entities.Asset
 import com.erlend.cryptomall.domain.model.entities.AssetAmount
 import com.erlend.cryptomall.domain.model.entities.AssetTransaction
 import com.erlend.cryptomall.domain.model.entities.CryptoMallAccount
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalDao {
@@ -27,19 +28,21 @@ interface LocalDao {
     suspend fun insertAssets(asset: Asset)
 
     @Query("SELECT * FROM asset ORDER BY changePercent24Hr DESC")
-    suspend fun getAssets(): List<Asset>
+    fun getAssets(): Flow<List<Asset>>
 
     @Query("SELECT * FROM asset where symbol LIKE :symbol")
-    suspend fun getAsset(symbol: String): Asset
+    fun getAsset(symbol: String): Flow<Asset>
 
     // Asset Ownership
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOwnedAsset(assetAmount: AssetAmount)
 
+    @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM asset_amount INNER JOIN asset ON assetSymbol = symbol & symbol LIKE :symbol WHERE accountId LIKE :accountId")
     suspend fun getOwnedAsset(accountId: String, symbol: String): List<AssetAmount>
 
+    @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM asset_amount INNER JOIN asset ON assetSymbol = symbol WHERE accountId LIKE :accountId")
     suspend fun getOwnedAssets(accountId: String): List<AssetAmount>
 
@@ -52,5 +55,5 @@ interface LocalDao {
     suspend fun insertTransaction(AssetTransaction: AssetTransaction)
 
     @Query("SELECT * FROM asset_transaction WHERE accountId LIKE :accountId")
-    suspend fun getTransactions(accountId: String): List<AssetTransaction>
+    fun getTransactions(accountId: String): Flow<List<AssetTransaction>>
 }

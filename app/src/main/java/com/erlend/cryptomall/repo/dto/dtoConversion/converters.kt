@@ -2,12 +2,12 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.repo.dto
+package com.erlend.cryptomall.repo.dto.dtoConversion
 
 import com.erlend.cryptomall.domain.model.entities.Asset
-import com.erlend.cryptomall.domain.model.entities.Data
 import com.erlend.cryptomall.domain.model.entities.HistoryAsset
-import com.erlend.cryptomall.domain.model.entities.HistoryData
+import com.erlend.cryptomall.repo.dto.Data
+import com.erlend.cryptomall.repo.dto.HistoryData
 
 fun Data.toAsset() = Asset(
     changePercent24Hr = changePercent24Hr,

@@ -28,7 +28,7 @@ object AppModule {
     fun provideCoinCapApi(): CoinCapApi {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://api.coincap.io/v2/")
+            .baseUrl("https://api.coincap.io/v2/") // TODO add to const
             .build().create(CoinCapApi::class.java)
     }
 

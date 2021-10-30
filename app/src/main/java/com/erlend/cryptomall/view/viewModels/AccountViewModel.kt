@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.presentation.viewModels
+package com.erlend.cryptomall.view.viewModels
 
 import androidx.lifecycle.ViewModel
 import com.erlend.cryptomall.repo.local.LocalDao

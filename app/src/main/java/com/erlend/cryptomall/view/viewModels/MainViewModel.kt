@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.presentation.viewModels
+package com.erlend.cryptomall.view.viewModels
 
 import androidx.lifecycle.ViewModel
 import com.erlend.cryptomall.domain.model.entities.*
@@ -11,13 +11,12 @@ import com.erlend.cryptomall.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-const val TAG = "MainViewModel: "
-
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val api: CoinCapApi,
-    val db: LocalDao
+    private val db: LocalDao
 ) : ViewModel() {
+    private val tag = "MainViewModel: "
 
     // Flow - Asset list screen 2
     // Note: Back button should close the app

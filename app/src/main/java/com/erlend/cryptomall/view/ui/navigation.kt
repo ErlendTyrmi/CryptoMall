@@ -2,15 +2,15 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.presentation.ui
+package com.erlend.cryptomall.view.ui
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.erlend.cryptomall.presentation.ui.composables.account.Overview
-import com.erlend.cryptomall.presentation.ui.composables.Splash
-import com.erlend.cryptomall.presentation.viewModels.AssetViewModel
+import com.erlend.cryptomall.view.ui.composables.account.Overview
+import com.erlend.cryptomall.view.ui.composables.Splash
+import com.erlend.cryptomall.view.viewModels.AssetViewModel
 
 @Composable
 fun Navigation(assetModel: AssetViewModel){
