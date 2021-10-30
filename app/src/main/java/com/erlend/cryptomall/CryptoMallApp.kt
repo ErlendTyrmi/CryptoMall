@@ -1,15 +1,30 @@
+/*
+ * Copyright (c) 2021. Erlend Tyrmi
+ */
+
 package com.erlend.cryptomall
 
 import android.app.Application
 import android.content.res.Configuration
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.util.CoilUtils
 import dagger.hilt.android.HiltAndroidApp
+import okhttp3.OkHttpClient
 
 @HiltAndroidApp
-class CryptoMallApp : Application() {
+class CryptoMallApp : Application(), ImageLoaderFactory {
 
-    // Mock environment variables
-    companion object {
-        const val API_KEY: String = "e13a1a18-b3ac-4419-b9cf-2594ce2a1ca0"
+    // retrieve: val imageLoader = context.imageLoader
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(applicationContext)
+            .crossfade(true)
+            .okHttpClient {
+                OkHttpClient.Builder()
+                    .cache(CoilUtils.createDefaultCache(applicationContext))
+                    .build()
+            }
+            .build()
     }
 
     // Called when the application is starting, before any other application objects have been created.
