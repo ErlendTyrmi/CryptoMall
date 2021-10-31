@@ -19,8 +19,9 @@ import com.erlend.cryptomall.view.viewModels.TradeViewModel
 // Optional: Graph of fluctuations last 24h/week
 
 @Composable
-fun Currency(navController: NavHostController, tradeModel: TradeViewModel) {
+fun Currency(navController: NavHostController, tradeModel: TradeViewModel, symbol: String) {
+
     Box(modifier = Modifier.fillMaxSize()){
-        Text(text = "Currency here!", modifier = Modifier.align(Alignment.Center))
+        Text(text = "$symbol here!", modifier = Modifier.align(Alignment.Center))
     }
 }

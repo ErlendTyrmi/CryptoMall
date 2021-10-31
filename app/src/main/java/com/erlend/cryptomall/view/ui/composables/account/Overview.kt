@@ -45,7 +45,7 @@ fun Overview(navController: NavHostController, assetViewModel: AssetViewModel) {
         AssetSearchBar(assetViewModel = assetViewModel)
         Box(modifier = Modifier.fillMaxSize()) {
             MessageList(
-                assets!!.filter { it.name.contains(query, ignoreCase = true) || query == ""},
+                assets!!.filter { it.name.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)|| query == ""},
                 onClickAsset
             )
         }
