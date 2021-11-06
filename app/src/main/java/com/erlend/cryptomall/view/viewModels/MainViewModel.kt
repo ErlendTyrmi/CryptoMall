@@ -4,98 +4,70 @@
 
 package com.erlend.cryptomall.view.viewModels
 
+import android.accounts.Account
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.erlend.cryptomall.domain.model.entities.*
+import com.erlend.cryptomall.repo.dto.AssetDtoListServerResponse
+import com.erlend.cryptomall.repo.dto.AssetDtoServerResponse
+import com.erlend.cryptomall.repo.dto.dtoConversion.toAsset
 import com.erlend.cryptomall.repo.local.LocalDao
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.*
 import javax.inject.Inject
 
+// Main ViewModel handles global methods used for the account E.g. calculate owned assets sum value
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val api: CoinCapApi,
     private val db: LocalDao
 ) : ViewModel() {
-    private val tag = "MainViewModel: "
+    private val TAG = "MainViewModel: "
+    private var account: CryptoMallAccount? = null
 
-    // Flow - Asset list screen 2
-    // Note: Back button should close the app
-    // Nav from here to
-
-    // Get assets and store in room eg. on page refresh
-    fun getAssets() {
-        // This is in assetviewmodel
-    }
-
-    // Get icons from coil anywhere
-
-    // check if account exists and is initiated
-    fun checkAccountInit(){
+    // Setup account on boot
+    init {
+        viewModelScope.launch {
+            account = db.getAccount()
+            if (account == null) {
+                setupAccount()
+            }
+        }
 
     }
 
-    // db is null or account is null? Create and add 10.000
-    fun setupAccount( ) : Int{
-        return 0
+    suspend fun setupAccount() {
+        // Create account
+        db.insertAccount(CryptoMallAccount(UUID.randomUUID()))
+
+        // Confirm and read
+        account = db.getAccount()
+        Log.d(TAG, "Account: " + account)
+
+        val accountId = account?.accountId!!
+
+        // Setup account with 10000 USD
+        db.insertOwnedAsset(AssetAmount(accountId, "USD", "10000"))
+
+        // Confirm
+        Log.d(TAG, "setupAccount: " + db.getOwnedAssets(accountId))
     }
 
-    // Sum up points from all owned assets, in USD
-    fun getSumPoints( accountId: String ){
-    }
+    fun getOwnedAssets() {}
 
-    // Flow screen 3 - Owned assets overview
-    // Note: has "transactions" button
-
-    // Show a list of specified owned assets by largest sum in USD
-    fun getOwnedAssets(){
-    }
-
-    // Flow screen 7 - Transactions
-    // Note: Back button to 3
-
-    fun getTransactions() : List<AssetTransaction> {
-        return listOf(AssetTransaction("", 2, 1.2, 33.1, "", ""))
-    }
-
-    // FLow screen 4: Asset page
-    // An asset is clicked and might be traded. Update asset
-    // Buttons to buy and sell visible when action is possible
-
-    //Get updated plain asset
-    fun getAsset(id: String) {
-        // This is in assetViewModel
-    }
-
-
-    fun getAssetInAccount(symbol: String){
-    }
-
-    // Graph Bonus? Get history asset list and draw
-    fun getAssetHistory(){
-    }
-
-    // FLow screen 5 - Buy
-    // Show dollars left
-    // Enter dollars - update crypto amount
-    // Show error if user enters too much
-    // Back to 4
-
-    // Click changes account value og dollars and said crypto
-    fun buy( symbol: String, amount: Double, paid: Double ){
-        // Atomic:
-        // Account dollars go down
-        // [symbol] goes up
-    }
-
-    // Flow Screen 6 Sell
-    // Enter crypto, update dollars
-    // Same layout as 5
-    // Also back to 4, much reuse here
-
-    fun sell(symbol: String, amount: Double, earned: Double){
-        // Atomic:
-        // Dollars go down
-        // Symbol goes up
-    }
+    // "Points
+    fun getPoints() {}
 }
+
+
+
+
 

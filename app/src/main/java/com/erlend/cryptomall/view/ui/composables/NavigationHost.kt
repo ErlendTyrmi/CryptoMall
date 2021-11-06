@@ -4,7 +4,6 @@
 
 package com.erlend.cryptomall.view.ui.composables
 
-import android.provider.ContactsContract
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavController
@@ -13,9 +12,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.erlend.cryptomall.view.ui.composables.account.Overview
-import com.erlend.cryptomall.view.ui.composables.account.Portfolio
-import com.erlend.cryptomall.view.ui.composables.account.Transactions
+import com.erlend.cryptomall.view.ui.composables.asset.Overview
+import com.erlend.cryptomall.view.ui.composables.asset.Portfolio
+import com.erlend.cryptomall.view.ui.composables.asset.Transactions
 import com.erlend.cryptomall.view.ui.composables.trade.Buy
 import com.erlend.cryptomall.view.ui.composables.trade.Currency
 import com.erlend.cryptomall.view.ui.composables.trade.Sell
@@ -72,7 +71,7 @@ fun NavHost(
             backStackEntry.arguments?.getString("symbol")?.let {
                 Currency(
                     navController = navController,
-                    tradeModel = tradeViewModel,
+                    tradeViewModel = tradeViewModel,
                     it
                 )
             }

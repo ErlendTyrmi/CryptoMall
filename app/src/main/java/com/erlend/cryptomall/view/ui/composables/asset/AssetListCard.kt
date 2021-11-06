@@ -2,16 +2,20 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.view.ui.composables.account
+package com.erlend.cryptomall.view.ui.composables.asset
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,13 +24,13 @@ import com.erlend.cryptomall.domain.model.entities.Asset
 
 @Composable
 fun AssetListCard(
-    asset: Asset = Asset("_", "_", "_", "_", "_", "_"),
+    asset: Asset = Asset(),
     onClickAsset: (String) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(16.dp, 0.dp)
             .clickable { onClickAsset(asset.symbol) }
     ) {
         Image(
@@ -35,11 +39,13 @@ fun AssetListCard(
                 data = "https://static.coincap.io/assets/icons/" + asset.symbol.lowercase() + "@2x.png",
             ),
             contentDescription = asset.name + " logo",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(32.dp)
-                .padding(0.dp, 0.dp, 8.dp, 0.dp)
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color.LightGray)
         )
-        Column() {
+        Column(modifier = Modifier.padding(10.dp, 0.dp, 0.dp, 0.dp)) {
             Row {
                 Text(
                     text = asset.name,
@@ -47,12 +53,14 @@ fun AssetListCard(
                     fontWeight = FontWeight.Bold
                 )
             }
-            Row {
+            Row(modifier = Modifier.padding(0.dp, 8.dp, 0.dp, 0.dp)) {
                 Text(
+                    modifier = Modifier.weight(2F),
                     text = "Price in USD: " + asset.priceUsd.take(5),
                     fontSize = 14.sp,
                 )
                 Text(
+                    modifier = Modifier.weight(2F),
                     text = "Change: " + asset.changePercent24Hr.take(5) + "%",
                     fontSize = 14.sp
                 )
@@ -60,8 +68,9 @@ fun AssetListCard(
         }
     }
     Divider(
-        color = Color.LightGray,
+        color = Color.DarkGray,
         thickness = 1.dp,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(16.dp),
     )
+
 }

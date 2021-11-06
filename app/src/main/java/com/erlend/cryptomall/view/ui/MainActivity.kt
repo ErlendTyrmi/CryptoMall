@@ -30,11 +30,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //Test api
-        assetModel.pullAssetsRemote()
-        assetModel.pullAssetRemote("ethereum")
-
-
         setContent {
             val navController = rememberNavController()
             val startDestination = "splash"

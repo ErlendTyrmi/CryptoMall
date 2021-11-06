@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.view.ui.composables.account
+package com.erlend.cryptomall.view.ui.composables.asset
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,7 +24,7 @@ import com.erlend.cryptomall.view.viewModels.AssetViewModel
 @Composable
 fun AssetSearchBar(assetViewModel: AssetViewModel) {
     // Receiving composable filters based on this
-    val query = assetViewModel.assetsQuery
+    val query = assetViewModel.getQuery()
     val keyboardController = LocalSoftwareKeyboardController.current
 
     TextField(

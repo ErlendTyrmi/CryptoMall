@@ -2,14 +2,13 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.view.ui.composables.account
+package com.erlend.cryptomall.view.ui.composables.asset
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -30,7 +29,7 @@ import com.erlend.cryptomall.view.viewModels.AssetViewModel
 fun Overview(navController: NavHostController, assetViewModel: AssetViewModel) {
 
     val assets by assetViewModel.getAssetsLocal().observeAsState()
-    val query by assetViewModel.assetsQuery
+    val query by assetViewModel.getQuery()
 
     // onClick for the asset list, taking symbol as arg
     val onClickAsset: (String) -> Unit = {
@@ -44,8 +43,11 @@ fun Overview(navController: NavHostController, assetViewModel: AssetViewModel) {
         AccountTopBar()
         AssetSearchBar(assetViewModel = assetViewModel)
         Box(modifier = Modifier.fillMaxSize()) {
+            // Assets are filtered by the search input field
             MessageList(
-                assets!!.filter { it.name.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)|| query == ""},
+                assets!!.filter { it.name.contains(query, ignoreCase = true) ||
+                        it.name.contains(query, ignoreCase = true) ||
+                        query == ""},
                 onClickAsset
             )
         }
