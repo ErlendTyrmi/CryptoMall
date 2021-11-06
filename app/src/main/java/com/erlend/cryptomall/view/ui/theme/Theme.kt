@@ -4,6 +4,7 @@
 
 package com.erlend.cryptomall.view.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -12,15 +13,9 @@ import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColors(
-    primary = backgroundBrown,
-    primaryVariant = backgroundBrown,
     secondary = Teal200,
-    surface = backgroundBrown,
-
-    // primary = Purple200,
-    // primaryVariant = Purple700,
-    // secondary = Teal200,
-    // surface = backgroundBrown
+    primary = Purple200,
+    primaryVariant = Purple700
 )
 
 private val LightColorPalette = lightColors(
@@ -39,7 +34,7 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun CryptoMallTheme(darkTheme: Boolean = true, content: @Composable() () -> Unit) {
+fun CryptoMallTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {

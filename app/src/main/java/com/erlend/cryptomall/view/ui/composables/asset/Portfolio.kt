@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Erlend Tyrmi
  */
 
-package com.erlend.cryptomall.view.ui.composables
+package com.erlend.cryptomall.view.ui.composables.asset
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.erlend.cryptomall.view.ui.composables.account.AccountTopBar
+import androidx.navigation.NavHostController
+import com.erlend.cryptomall.view.viewModels.AssetViewModel
 
 // User points in header (copy from Overview!)
 // How user points are calculated
@@ -21,7 +22,7 @@ import com.erlend.cryptomall.view.ui.composables.account.AccountTopBar
 // This is subpage of overview!
 
 @Composable
-fun Portfolio(){
+fun Portfolio(assetModel: AssetViewModel, navController: NavHostController){
     Column {
         AccountTopBar()
         Box(modifier = Modifier.fillMaxSize()){
