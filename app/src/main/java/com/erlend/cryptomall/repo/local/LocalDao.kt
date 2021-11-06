@@ -10,6 +10,7 @@ import com.erlend.cryptomall.domain.model.entities.AssetAmount
 import com.erlend.cryptomall.domain.model.entities.AssetTransaction
 import com.erlend.cryptomall.domain.model.entities.CryptoMallAccount
 import kotlinx.coroutines.flow.Flow
+import java.util.*
 
 @Dao
 interface LocalDao {
@@ -20,15 +21,18 @@ interface LocalDao {
     suspend fun insertAccount(account: CryptoMallAccount)
 
     @Query("SELECT * FROM account LIMIT 1")
-    suspend fun getAccount(): CryptoMallAccount
+    suspend fun getAccount(): CryptoMallAccount?
 
     // Assets
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAssets(asset: Asset)
 
-    @Query("SELECT * FROM asset ORDER BY changePercent24Hr DESC")
+    @Query("SELECT * FROM asset ORDER BY rank DESC")
     fun getAssets(): Flow<List<Asset>>
+
+    @Query("SELECT * FROM asset WHERE name like :search OR symbol LIKE :search ORDER BY rank DESC")
+    fun searchAssets(search: String): Flow<List<Asset>>
 
     @Query("SELECT * FROM asset where symbol LIKE :symbol")
     fun getAsset(symbol: String): Flow<Asset>
@@ -38,13 +42,11 @@ interface LocalDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOwnedAsset(assetAmount: AssetAmount)
 
-    @RewriteQueriesToDropUnusedColumns
-    @Query("SELECT * FROM asset_amount INNER JOIN asset ON assetSymbol = symbol & symbol LIKE :symbol WHERE accountId LIKE :accountId")
-    suspend fun getOwnedAsset(accountId: String, symbol: String): List<AssetAmount>
+    @Query("SELECT * FROM asset_amount WHERE assetSymbol LIKE :symbol AND accountId LIKE :accountId")
+    suspend fun getOwnedAsset(accountId: UUID, symbol: String): List<AssetAmount>
 
-    @RewriteQueriesToDropUnusedColumns
-    @Query("SELECT * FROM asset_amount INNER JOIN asset ON assetSymbol = symbol WHERE accountId LIKE :accountId")
-    suspend fun getOwnedAssets(accountId: String): List<AssetAmount>
+    @Query("SELECT * FROM asset_amount WHERE accountId = :accountId")
+    suspend fun getOwnedAssets(accountId: UUID): List<AssetAmount>
 
     @Delete
     suspend fun deleteOwnedAsset(assetAmount: AssetAmount)
@@ -55,5 +57,5 @@ interface LocalDao {
     suspend fun insertTransaction(AssetTransaction: AssetTransaction)
 
     @Query("SELECT * FROM asset_transaction WHERE accountId LIKE :accountId")
-    fun getTransactions(accountId: String): Flow<List<AssetTransaction>>
+    fun getTransactions(accountId: UUID): Flow<List<AssetTransaction>>
 }

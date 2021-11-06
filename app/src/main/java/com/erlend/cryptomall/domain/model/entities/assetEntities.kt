@@ -12,18 +12,19 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "asset")
 data class Asset(
-    val changePercent24Hr: String,
-    val id: String,
-    val name: String,
-    val priceUsd: String,
+    val changePercent24Hr: String = "_",
+    val id: String  = "_",
+    val name: String  = "_",
+    val priceUsd: String  = "_",
     @PrimaryKey
-    val symbol: String,
+    val symbol: String  = "_",
+    val rank: String  = "_",
 )
 
 @Entity(tableName = "history_asset")
 data class HistoryAsset(
-    val date: String,
-    val priceUsd: String,
+    val date: String  = "_",
+    val priceUsd: String  = "_",
     @PrimaryKey()
-    val time: Long
+    val time: Long = 0L
 )

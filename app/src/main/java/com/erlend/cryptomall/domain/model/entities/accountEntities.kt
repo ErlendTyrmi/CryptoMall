@@ -6,19 +6,20 @@ package com.erlend.cryptomall.domain.model.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.*
 
 // Account
 
 @Entity(tableName = "account")
 data class CryptoMallAccount(
     @PrimaryKey
-    val accountId: Int = 0, // Only allow one account
+    val accountId: UUID = UUID.randomUUID() // Only allow one account
 )
 
 // Balance
 @Entity(tableName = "asset_amount", primaryKeys = ["accountId", "assetSymbol"])
 data class AssetAmount(
-    val accountId: Int,
+    val accountId: UUID,
     val assetSymbol: String,
     val amountOwned: String
 )
@@ -26,7 +27,7 @@ data class AssetAmount(
 // Transactions
 @Entity(tableName = "asset_transaction", primaryKeys = ["accountId", "timestamp"])
 data class AssetTransaction(
-    val accountId : String,
+    val accountId : UUID,
     val timestamp: Long,
     val amountInUsd: Double,
     val amountInCurrency: Double,

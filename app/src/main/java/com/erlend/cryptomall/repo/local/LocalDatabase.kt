@@ -4,6 +4,7 @@
 
 package com.erlend.cryptomall.repo.local
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.erlend.cryptomall.domain.model.entities.*
@@ -17,9 +18,9 @@ import com.erlend.cryptomall.domain.model.entities.*
         AssetTransaction::class
     ],
     version = 1,
-    /*autoMigrations = [
-        AutoMigration (from = 1, to = 2)
-    ]*/
+//    autoMigrations = [
+//        AutoMigration (from = 2, to = 3)
+//    ]
 )
 abstract class LocalDatabase : RoomDatabase() {
 

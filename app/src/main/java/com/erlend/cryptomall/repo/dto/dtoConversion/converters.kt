@@ -15,6 +15,7 @@ fun Data.toAsset() = Asset(
     name = name,
     priceUsd = priceUsd,
     symbol = symbol,
+    rank = rank
 )
 
 
