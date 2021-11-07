@@ -9,16 +9,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.erlend.cryptomall.view.viewModels.AccountViewModel
 
 // This composable shows the net held assets in "points", equal to dollars.
 
 @Composable
-fun AccountTopBar(){
-    Box (modifier = Modifier.padding(8.dp).fillMaxWidth(),){
-        Text(text = "Top bar for account pages!", modifier = Modifier.align(Alignment.Center))
+fun AccountTopBar(accountViewModel: AccountViewModel) {
+
+    val points = accountViewModel.points.observeAsState()
+
+    Box (modifier = Modifier
+        .padding(8.dp)
+        .fillMaxWidth(),){
+        //Text(text = "User $points",  modifier = Modifier.align(Alignment.Center))
+        Text(text = "Top Bar Account")
     }
 }
 

@@ -25,38 +25,40 @@ import javax.inject.Inject
 
 // Main ViewModel handles global methods used for the account, e.g. calculate owned assets sum value
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class AccountViewModel @Inject constructor(
     private val api: CoinCapApi,
     private val db: LocalDao
 ) : ViewModel() {
     private val TAG = "MainViewModel: "
     private var account: CryptoMallAccount? = null
+    private lateinit var accountId: UUID
 
     // Points = owned data in US dollars
-    private val _points = MutableLiveData<Double>()
-    val points: LiveData<Double>
+    private val _points = MutableLiveData<String>()
+    val points: LiveData<String>
         get() = _points
 
     // Setup account on boot
-    init {
+    fun getOrCreateAccount() {
         viewModelScope.launch {
             account = db.getAccount()
             if (account == null) {
-                setupAccount()
+                accountId = UUID.randomUUID()
+                setupAccount(accountId)
             }
         }
-        _points.value = 0.0
+        _points.value = "_"
     }
 
-    suspend fun setupAccount() {
+    private suspend fun setupAccount(id: UUID) {
         // Create account
-        db.insertAccount(CryptoMallAccount(UUID.randomUUID()))
+        db.insertAccount(CryptoMallAccount(id))
 
         // Confirm and read
         account = db.getAccount()
         Log.d(TAG, "Account: $account")
 
-        val accountId = account?.accountId!!
+        accountId = account?.accountId!!
 
         // Setup account with 10000 USD
         val amount = BigDecimal(10000)
@@ -90,21 +92,25 @@ class MainViewModel @Inject constructor(
                 Log.d(TAG, "setupAccount: Right number of transactions")
             }
         }
+
+        // Finally, update the points
+        updatePointsSum()
     }
 
-    // TODO: Think throught the flow.. will this always be fresh?
-    suspend fun getPointsSum(accountId: UUID): BigDecimal {
-        var sum = BigDecimal(0)
-        db.getOwnedAssets(accountId).forEach { assetAmount ->
-            db.getAsset(assetAmount.assetSymbol).collect { asset ->
-                sum = sum.add(
-                    asset.priceUsd.toBigDecimal()
-                        .times(assetAmount.amountOwned.toBigDecimal())
-                )
+    fun updatePointsSum(){
+        viewModelScope.launch{
+            var sum = BigDecimal(0)
+            db.getOwnedAssets(accountId).forEach { assetAmount ->
+                db.getAsset(assetAmount.assetSymbol).collect { asset ->
+                    sum = sum.add(
+                        asset.priceUsd.toBigDecimal()
+                            .times(assetAmount.amountOwned.toBigDecimal())
+                    )
+                }
             }
+            Log.d(TAG, "getPointsSum: $sum")
+            _points.value = sum.toString().take(5)
         }
-        Log.d(TAG, "getPointsSum: $sum")
-        return sum
     }
 }
 

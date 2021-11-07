@@ -84,13 +84,18 @@ dependencies {
     implementation "com.google.dagger:hilt-android:2.38.1"
     kapt "com.google.dagger:hilt-compiler:2.38.1"
 
+    // Hilt compose nav
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
+
     // Room
     def room_version = "2.4.0-beta01" // was: "2.3.0"
 
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
-    // Convert to Kotlin
+
+    // Room
     kapt "androidx.room:room-compiler:$room_version"
+
     // Coroutines
     implementation "androidx.room:room-ktx:$room_version"
 

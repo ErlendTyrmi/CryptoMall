@@ -23,6 +23,8 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.math.BigDecimal
+import java.util.*
 import javax.inject.Inject
 
 // Handles logic for views in the "trade" package
@@ -73,5 +75,4 @@ class TradeViewModel @Inject constructor(
             })
         }
     }
-
 }

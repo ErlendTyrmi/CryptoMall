@@ -16,19 +16,22 @@ import com.erlend.cryptomall.view.ui.composables.NavHost
 
 import com.erlend.cryptomall.view.ui.theme.CryptoMallTheme
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
-import com.erlend.cryptomall.view.viewModels.MainViewModel
+import com.erlend.cryptomall.view.viewModels.AccountViewModel
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val model: MainViewModel by viewModels()
+    private val accountModel: AccountViewModel by viewModels()
     private val assetModel: AssetViewModel by viewModels()
     private val tradeModel: TradeViewModel by viewModels()
 
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // First, connect to account or create it
+        accountModel.getOrCreateAccount()
 
         setContent {
             val navController = rememberNavController()
@@ -39,9 +42,9 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = startDestination,
+                        accountViewModel = accountModel,
                         assetViewModel = assetModel,
                         tradeViewModel = tradeModel,
-                        mainViewModel = model
                     )
                 }
             }

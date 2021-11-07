@@ -19,17 +19,18 @@ import com.erlend.cryptomall.view.ui.composables.trade.Buy
 import com.erlend.cryptomall.view.ui.composables.trade.Currency
 import com.erlend.cryptomall.view.ui.composables.trade.Sell
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
-import com.erlend.cryptomall.view.viewModels.MainViewModel
+import com.erlend.cryptomall.view.viewModels.AccountViewModel
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 
 @ExperimentalComposeUiApi
 @Composable
 fun NavHost(
     navController: NavController,
+    startDestination: String = "overview",
+    accountViewModel: AccountViewModel, // The order matters!
     assetViewModel: AssetViewModel,
     tradeViewModel: TradeViewModel,
-    startDestination: String = "overview",
-    mainViewModel: MainViewModel
+
 ) {
 
     NavHost(
@@ -44,19 +45,22 @@ fun NavHost(
         composable(route = "overview") {
             Overview(
                 navController = navController,
-                assetViewModel = assetViewModel
+                assetViewModel = assetViewModel,
+                accountViewModel = accountViewModel
             )
         }
         composable(route = "portfolio") {
             Transactions(
                 navController = navController,
-                assetModel = assetViewModel
+                assetModel = assetViewModel,
+                accountViewModel = accountViewModel
             )
         }
         composable(route = "transactions") {
             Portfolio(
                 navController = navController,
-                assetModel = assetViewModel
+                assetModel = assetViewModel,
+                accountViewModel = accountViewModel
             )
         }
 
