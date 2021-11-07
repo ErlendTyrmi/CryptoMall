@@ -76,30 +76,35 @@ class MainViewModel @Inject constructor(
                 assetName = "",
                 assetSymbol = symbol
             )
-        ).let { // Check Transaction
-            db.getTransactions(accountId).collect { transactions ->
-                val size: Int = transactions.size
-                if (size != 1) {
-                    throw Exception("setupAccount: Failed. Transactions was not " +
-                            "of length 1 at account setup. Found " + size + " transactions.")
-                }
+        )
+
+        // Check Transaction
+        db.getTransactions(accountId).collect { transactions ->
+            val size: Int = transactions.size
+            if (size != 1) {
+                throw Exception(
+                    "setupAccount: Failed. Transactions was not " +
+                            "of length 1 at account setup. Found " + size + " transactions."
+                )
+            }  else {
+                Log.d(TAG, "setupAccount: Right number of transactions")
             }
         }
+    }
 
-        suspend fun getOwnedAssets(accountId: UUID) {
-            var sum = BigDecimal(0)
-            db.getOwnedAssets(accountId).forEach { assetAmount ->
-                db.getAsset(assetAmount.assetSymbol).collect { asset ->
-                    sum = sum.add(
-                        asset.priceUsd.toBigDecimal()
-                            .times(assetAmount.amountOwned.toBigDecimal())
-                    )
-                }
+    // TODO: Think throught the flow.. will this always be fresh?
+    suspend fun getPointsSum(accountId: UUID): BigDecimal {
+        var sum = BigDecimal(0)
+        db.getOwnedAssets(accountId).forEach { assetAmount ->
+            db.getAsset(assetAmount.assetSymbol).collect { asset ->
+                sum = sum.add(
+                    asset.priceUsd.toBigDecimal()
+                        .times(assetAmount.amountOwned.toBigDecimal())
+                )
             }
         }
-
-        // "Points
-        fun getPoints() {}
+        Log.d(TAG, "getPointsSum: $sum")
+        return sum
     }
 }
 
