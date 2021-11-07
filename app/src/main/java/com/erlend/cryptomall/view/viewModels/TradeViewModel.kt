@@ -46,7 +46,7 @@ class TradeViewModel @Inject constructor(
 
     }
 
-    fun getAssetLocal(symbol: String): LiveData<Asset> {
+    fun getAssetLocal(): LiveData<Asset> {
         return asset
     }
 

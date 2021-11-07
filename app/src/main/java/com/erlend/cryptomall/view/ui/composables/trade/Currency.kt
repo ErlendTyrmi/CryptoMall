@@ -21,28 +21,25 @@ import com.erlend.cryptomall.view.viewModels.TradeViewModel
 @Composable
 fun Currency(navController: NavHostController, tradeViewModel: TradeViewModel, symbol: String) {
 
-    val asset by tradeViewModel.getAssetLocal(symbol).observeAsState()
+    val asset by tradeViewModel.getAssetLocal().observeAsState()
     tradeViewModel.pullAssetRemote(symbol)
     tradeViewModel.observeAsset(symbol)
-Column() {
-    TradeTopBar(asset)
 
     Column() {
-        Text(text = "Buy shit")
-        Button(onClick = { /*TODO*/ }){
-            Text(text = "Buy ${asset?.name}")
-            
-        }
-        Button(onClick = { /*TODO*/ }){
-            Text(text = "Sell ${asset?.name}")
+        TradeTopBar(asset)
 
+        Column() {
+            // get owned value
+
+            Button(onClick = { /*TODO*/ }) {
+                Text(text = "Buy ${asset?.name}")
+            }
+            Button(onClick = { /*TODO*/ }) {
+                Text(text = "Sell ${asset?.name}")
+
+            }
         }
     }
-}
-
-
-
-
 
 
 }
