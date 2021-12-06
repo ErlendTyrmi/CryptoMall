@@ -51,11 +51,7 @@ class MainActivity : ComponentActivity() {
                     androidx.navigation.compose.NavHost(
                         navController = navController as NavHostController, startDestination
                     ) {
-                        navController(
-                            accountModel,
-                            assetModel,
-                            tradeModel
-                        )
+
                     }
                 }
             }
