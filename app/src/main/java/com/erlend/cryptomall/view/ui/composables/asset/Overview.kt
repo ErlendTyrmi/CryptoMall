@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.erlend.cryptomall.domain.model.entities.Asset
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
+import com.erlend.cryptomall.view.viewModels.AccountViewModel
 
 // This page shows the "points" (value in dollars) at the top, and a list of currencies.
 // The currencies have present value in $ and change % last 24h.
@@ -26,7 +27,11 @@ import com.erlend.cryptomall.view.viewModels.AssetViewModel
 
 @ExperimentalComposeUiApi
 @Composable
-fun Overview(navController: NavHostController, assetViewModel: AssetViewModel) {
+fun Overview(
+    navController: NavHostController,
+    assetViewModel: AssetViewModel,
+    accountViewModel: AccountViewModel
+) {
 
     val assets by assetViewModel.getAssetsLocal().observeAsState()
     val query by assetViewModel.getQuery()
@@ -40,8 +45,8 @@ fun Overview(navController: NavHostController, assetViewModel: AssetViewModel) {
     // Log.d("overview", assets.toString())
 
     Column {
-        AccountTopBar()
-        AssetSearchBar(assetViewModel = assetViewModel)
+        AccountTopBar(accountViewModel)
+        AssetSearchBar(assetViewModel)
         Box(modifier = Modifier.fillMaxSize()) {
             // Assets are filtered by the search input field
             MessageList(
