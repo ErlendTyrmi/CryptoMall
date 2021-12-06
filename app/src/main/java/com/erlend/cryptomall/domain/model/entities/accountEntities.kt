@@ -6,6 +6,7 @@ package com.erlend.cryptomall.domain.model.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.math.BigDecimal
 import java.util.*
 
 // Account
@@ -29,8 +30,8 @@ data class AssetAmount(
 data class AssetTransaction(
     val accountId : UUID,
     val timestamp: Long,
-    val amountInUsd: Double,
-    val amountInCurrency: Double,
-    val assetName: String,
-    val assetSymbol: String,
+    val inCurrencySymbol: String,
+    val outCurrencySymbol: String,
+    val inAmount: String,
+    val outAmount: String,
 )

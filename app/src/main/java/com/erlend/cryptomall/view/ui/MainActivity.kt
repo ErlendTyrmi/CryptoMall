@@ -11,18 +11,30 @@ import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.erlend.cryptomall.view.ui.composables.NavHost
+import com.erlend.cryptomall.view.ui.composables.Splash
+import com.erlend.cryptomall.view.ui.composables.asset.Overview
+import com.erlend.cryptomall.view.ui.composables.asset.Portfolio
+import com.erlend.cryptomall.view.ui.composables.asset.Transactions
+import com.erlend.cryptomall.view.ui.composables.trade.Buy
+import com.erlend.cryptomall.view.ui.composables.trade.Currency
+import com.erlend.cryptomall.view.ui.composables.trade.Sell
 
 import com.erlend.cryptomall.view.ui.theme.CryptoMallTheme
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
-import com.erlend.cryptomall.view.viewModels.MainViewModel
+import com.erlend.cryptomall.view.viewModels.AccountViewModel
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val model: MainViewModel by viewModels()
+
+    private val accountModel: AccountViewModel by viewModels()
     private val assetModel: AssetViewModel by viewModels()
     private val tradeModel: TradeViewModel by viewModels()
 
@@ -39,9 +51,9 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = startDestination,
+                        accountViewModel = accountModel,
                         assetViewModel = assetModel,
                         tradeViewModel = tradeModel,
-                        mainViewModel = model
                     )
                 }
             }

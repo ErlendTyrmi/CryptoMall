@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
+import com.erlend.cryptomall.view.viewModels.AccountViewModel
 
 // User points in header (copy from Overview!)
 // How user points are calculated
@@ -22,9 +23,9 @@ import com.erlend.cryptomall.view.viewModels.AssetViewModel
 // This is subpage of overview!
 
 @Composable
-fun Portfolio(assetModel: AssetViewModel, navController: NavHostController){
+fun Portfolio(assetModel: AssetViewModel, navController: NavHostController, accountViewModel: AccountViewModel){
     Column {
-        AccountTopBar()
+        AccountTopBar(accountViewModel)
         Box(modifier = Modifier.fillMaxSize()){
             Text(text = "Portfolio here!", modifier = Modifier.align(Alignment.Center))
         }

@@ -26,7 +26,7 @@ interface LocalDao {
     // Assets
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAssets(asset: Asset)
+    suspend fun insertAsset(asset: Asset)
 
     @Query("SELECT * FROM asset ORDER BY rank DESC")
     fun getAssets(): Flow<List<Asset>>
