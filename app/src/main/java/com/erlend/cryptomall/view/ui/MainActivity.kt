@@ -48,11 +48,13 @@ class MainActivity : ComponentActivity() {
             CryptoMallTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    androidx.navigation.compose.NavHost(
-                        navController = navController as NavHostController, startDestination
-                    ) {
-
-                    }
+                    NavHost(
+                        navController = navController,
+                        startDestination = startDestination,
+                        accountViewModel = accountModel,
+                        assetViewModel = assetModel,
+                        tradeViewModel = tradeModel,
+                    )
                 }
             }
         }
