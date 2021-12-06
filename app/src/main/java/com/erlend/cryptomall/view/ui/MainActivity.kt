@@ -34,6 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    private val accountModel: AccountViewModel by viewModels()
     private val assetModel: AssetViewModel by viewModels()
     private val tradeModel: TradeViewModel by viewModels()
 
@@ -50,62 +51,11 @@ class MainActivity : ComponentActivity() {
                     androidx.navigation.compose.NavHost(
                         navController = navController as NavHostController, startDestination
                     ) {
-                        composable(route = "splash") {
-                            Splash(navController = navController)
-                        }
-
-                        // Assets and account
-
-                        composable(route = "overview") {
-                            Overview(
-                                navController = navController,
-                                assetViewModel = assetViewModel,
-                                accountViewModel = AccountViewModel by viewModels()
-                            )
-                        }
-                        composable(route = "portfolio") {
-                            Transactions(
-                                navController = navController,
-                                assetModel = assetViewModel,
-                                accountViewModel = accountViewModel
-                            )
-                        }
-                        composable(route = "transactions") {
-                            Portfolio(
-                                navController = navController,
-                                assetModel = assetViewModel,
-                                accountViewModel = accountViewModel
-                            )
-                        }
-
-                        // Trade
-
-                        composable(
-                            route = "Currency/{symbol}",
-                            // Path argument
-                            arguments = listOf(navArgument("symbol") { type = NavType.StringType })
-                        ) { // Path argument boiler plate
-                                backStackEntry ->
-                            backStackEntry.arguments?.getString("symbol")?.let {
-                                Currency(
-                                    navController = navController,
-                                    tradeViewModel = tradeViewModel,
-                                    it
-                                )
-                            }
-                        }
-                        composable(route = "buy") {
-                            Buy(
-                                navController = navController,
-                                tradeModel = tradeViewModel
-                            )
-                        }
-                        composable(route = "sell") {
-                            Sell(
-                                navController = navController,
-                                tradeModel = tradeViewModel
-                            )
-                        }
+                        navController(
+                            accountModel,
+                            assetModel,
+                            tradeModel
+                        )
                     }
                 }
             }
