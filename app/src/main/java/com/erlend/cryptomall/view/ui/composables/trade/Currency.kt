@@ -4,12 +4,14 @@
 
 package com.erlend.cryptomall.view.ui.composables.trade
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 
@@ -23,21 +25,28 @@ fun Currency(navController: NavHostController, tradeViewModel: TradeViewModel, s
 
     val asset by tradeViewModel.getAssetLocal().observeAsState()
     tradeViewModel.pullAssetRemote(symbol)
-    tradeViewModel.observeAsset(symbol)
+    tradeViewModel.observeAssetLocal(symbol)
 
     Column() {
         TradeTopBar(asset)
-
         Column() {
-            // get owned value
+            Text("You own " + tradeViewModel.amountOwned.value )
+            Row(modifier = Modifier.fillMaxSize()) {
+                Button(
+                    modifier = Modifier.weight(1F).padding(16.dp),
+                    onClick = { /*TODO*/ }
+                ) {
+                    Text(text = "Buy ${asset?.name}")
+                }
+                Button(
+                    modifier = Modifier.weight(1F).padding(16.dp),
+                    onClick = { /*TODO*/ }
+                ) {
+                    Text(text = "Sell ${asset?.name}")
 
-            Button(onClick = { /*TODO*/ }) {
-                Text(text = "Buy ${asset?.name}")
+                }
             }
-            Button(onClick = { /*TODO*/ }) {
-                Text(text = "Sell ${asset?.name}")
 
-            }
         }
     }
 

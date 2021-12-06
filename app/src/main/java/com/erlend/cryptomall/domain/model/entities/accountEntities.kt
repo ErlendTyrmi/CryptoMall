@@ -30,8 +30,8 @@ data class AssetAmount(
 data class AssetTransaction(
     val accountId : UUID,
     val timestamp: Long,
-    val amountInUsd: String,
-    val amountInCurrency: String,
-    val assetName: String,
-    val assetSymbol: String,
+    val inCurrencySymbol: String,
+    val outCurrencySymbol: String,
+    val inAmount: String,
+    val outAmount: String,
 )

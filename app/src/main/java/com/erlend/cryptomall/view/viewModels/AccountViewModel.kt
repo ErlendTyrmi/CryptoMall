@@ -5,7 +5,6 @@
 package com.erlend.cryptomall.view.viewModels
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,11 +14,8 @@ import com.erlend.cryptomall.repo.local.LocalDao
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.math.BigDecimal
-import java.sql.Timestamp
 import java.util.*
 import javax.inject.Inject
 
@@ -30,23 +26,37 @@ class AccountViewModel @Inject constructor(
     private val db: LocalDao
 ) : ViewModel() {
     private val TAG = "MainViewModel: "
+    private val referenceAsset = "USD"
+    private val referenceAssetName = "US Dollar"
     private var account: CryptoMallAccount? = null
-    private lateinit var accountId: UUID
 
     // Points = owned data in US dollars
     private val _points = MutableLiveData<String>()
     val points: LiveData<String>
         get() = _points
 
+    // Account ID - Created on first boot
+    private val _accountId = MutableLiveData<UUID>()
+    val accountId: LiveData<UUID>
+        get() = _accountId
+
     // Setup account on boot
-    fun getOrCreateAccount() {
+    init {
         viewModelScope.launch {
+
             account = db.getAccount()
-            if (account == null) {
-                accountId = UUID.randomUUID()
-                setupAccount(accountId)
+            if (account != null) {
+                _accountId.value = account!!.accountId
+                updatePointsSum(account!!.accountId)
+                Log.d(TAG, "getAccountOrCreate: Found account " + accountId.value)
+            } else {
+                val id = UUID.randomUUID() // Mock receiving new id from db
+                _accountId.value = id
+                setupAccount(id)
             }
         }
+
+        // Also initiate points
         _points.value = "_"
     }
 
@@ -54,65 +64,51 @@ class AccountViewModel @Inject constructor(
         // Create account
         db.insertAccount(CryptoMallAccount(id))
 
-        // Confirm and read
-        account = db.getAccount()
-        Log.d(TAG, "Account: $account")
-
-        accountId = account?.accountId!!
-
-        // Setup account with 10000 USD
+        // Setup owned assets with 10000 USD
         val amount = BigDecimal(10000)
-        val symbol = "USD"
-        db.insertOwnedAsset(AssetAmount(accountId, symbol, amount.toString()))
-
-        // Confirm
-        Log.d(TAG, "setupAccount: " + db.getOwnedAssets(accountId))
+        db.insertOwnedAsset(AssetAmount(id, referenceAsset, amount.toString()))
 
         // Add first transaction
-        db.insertTransaction(
-            AssetTransaction = AssetTransaction(
-                accountId = accountId,
+        db.insertTransaction(AssetTransaction(
+                accountId = id,
                 timestamp = System.currentTimeMillis(),
-                amountInUsd = amount.toString(),
-                amountInCurrency = amount.toString(),
-                assetName = "",
-                assetSymbol = symbol
+                inAmount = amount.toString(),
+                inCurrencySymbol = referenceAsset,
+                outAmount = "0",
+                outCurrencySymbol = referenceAsset,
             )
         )
 
-        // Check Transaction
-        db.getTransactions(accountId).collect { transactions ->
-            val size: Int = transactions.size
-            if (size != 1) {
-                throw Exception(
-                    "setupAccount: Failed. Transactions was not " +
-                            "of length 1 at account setup. Found " + size + " transactions."
-                )
-            }  else {
-                Log.d(TAG, "setupAccount: Right number of transactions")
-            }
-        }
-
-        // Finally, update the points
-        updatePointsSum()
+        // Update points for the new account
+        updatePointsSum(id)
     }
 
-    fun updatePointsSum(){
-        viewModelScope.launch{
+    // Calculate points
+    private fun updatePointsSum(id: UUID) {
+        viewModelScope.launch {
             var sum = BigDecimal(0)
-            db.getOwnedAssets(accountId).forEach { assetAmount ->
-                db.getAsset(assetAmount.assetSymbol).collect { asset ->
-                    sum = sum.add(
-                        asset.priceUsd.toBigDecimal()
-                            .times(assetAmount.amountOwned.toBigDecimal())
-                    )
+            val assetAmounts = db.getOwnedAssets(id)
+
+            assetAmounts.forEach { assetAmount ->
+                Log.d(TAG, "updatePointsSum: " + assetAmount)
+                if (assetAmount.assetSymbol == referenceAsset) {
+                    sum = sum.add(assetAmount.amountOwned.toBigDecimal())
+                } else {
+                    db.getAsset(assetAmount.assetSymbol).collect { asset ->
+                        sum = sum.add(
+                            asset.priceUsd.toBigDecimal()
+                                .times(assetAmount.amountOwned.toBigDecimal())
+                        )
+                    }
                 }
             }
+
             Log.d(TAG, "getPointsSum: $sum")
             _points.value = sum.toString().take(5)
         }
     }
 }
+
 
 
 

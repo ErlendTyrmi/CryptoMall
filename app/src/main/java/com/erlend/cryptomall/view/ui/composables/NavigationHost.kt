@@ -27,10 +27,9 @@ import com.erlend.cryptomall.view.viewModels.TradeViewModel
 fun NavHost(
     navController: NavController,
     startDestination: String = "overview",
-    accountViewModel: AccountViewModel, // The order matters!
+    accountViewModel: AccountViewModel,
     assetViewModel: AssetViewModel,
-    tradeViewModel: TradeViewModel,
-
+    tradeViewModel: TradeViewModel, // TODO: Move navhost to Activity, Inject in navHost
 ) {
 
     NavHost(

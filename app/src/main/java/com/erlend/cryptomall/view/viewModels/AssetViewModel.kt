@@ -77,7 +77,7 @@ class AssetViewModel @Inject constructor(
                         val responseBody = response.body()!!
                         viewModelScope.launch(Dispatchers.IO) {
                             responseBody.data.forEach {
-                                db.insertAssets(it.toAsset())
+                                db.insertAsset(it.toAsset())
                             }
                             Log.d(tag, "Pulled " + responseBody.data.size + " assets from remote.")
                         }
@@ -91,6 +91,7 @@ class AssetViewModel @Inject constructor(
         }
     }
 
+    // TODO: Move this to main viewmodel
 //    //Get updated plain asset
 //    fun pullAssetRemote(id: String) {
 //        viewModelScope.launch(Dispatchers.IO) {
