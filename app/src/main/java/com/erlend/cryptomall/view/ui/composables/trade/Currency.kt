@@ -47,7 +47,6 @@ fun Currency(navController: NavHostController, tradeViewModel: TradeViewModel, s
                     onClick = { navController.navigate("sell/$symbol") }
                 ) {
                     Text(text = "Sell ${asset?.name}")
-
                 }
             }
 

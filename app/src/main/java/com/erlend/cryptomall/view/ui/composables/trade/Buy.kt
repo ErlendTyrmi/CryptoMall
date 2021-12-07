@@ -4,8 +4,11 @@
 
 package com.erlend.cryptomall.view.ui.composables.trade
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -13,11 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
-import com.erlend.cryptomall.view.ui.composables.asset.AccountTopBar
-import com.erlend.cryptomall.view.viewModels.AccountViewModel
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 
 // Enter an amount to buy as float, bounded by free dollars in portfolio
@@ -31,7 +35,9 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
     tradeViewModel.pullAssetRemote(symbol)
     tradeViewModel.observeAssetLocal(symbol)
 
-    var text by remember { mutableStateOf("") }
+    var amountText by remember { mutableStateOf("") }
+    val openDialog = remember { mutableStateOf(false) }
+
 
     Column() {
         TradeTopBar(asset = asset)
@@ -40,12 +46,44 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                 .align(Alignment.Center)
                 .padding(16.dp, 0.dp)){
 
+                if (openDialog.value){
+                    AlertDialog(
+                        onDismissRequest = {
+                            openDialog.value = false
+                        },
+                        title = {
+                            Text(text = "Buy $symbol")
+                        },
+                        text = {
+                            Text("Are you sure you want to buy $amountText $symbol")
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    tradeViewModel.buy(symbol, amountText)
+                                    openDialog.value = false
+                                }) {
+                                Text("Buy")
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = {
+                                    openDialog.value = false
+                                }) {
+                                Text("Cancel")
+                            }
+                        }
+                    )
+
+                }
+
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.dp, 16.dp),
-                    value = text,
-                    onValueChange = { text = it },
+                    value = amountText,
+                    onValueChange = { amountText = it },
                     label = { Text("Enter amount")},
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
@@ -54,7 +92,7 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.dp, 16.dp),
-                    onClick = { navController.navigate("buy/$symbol") }
+                    onClick = {openDialog.value = true}
                 ) {
                     Text(text = "Buy ${asset?.name}", Modifier.padding(8.dp))
                 }

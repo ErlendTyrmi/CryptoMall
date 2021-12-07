@@ -52,14 +52,13 @@ class TradeViewModel @Inject constructor(
         get() = _liquids
 
     fun observeAssetLocal(symbol: String) {
-
         // Get assets from local, observe as LiveData
         viewModelScope.launch {
             db.getAsset(symbol).distinctUntilChanged().collect { asset.value = it }
         }
-
     }
 
+    // Get the asset stored in this ViewModel
     fun getAssetLocal(): LiveData<Asset> {
         return asset
     }
@@ -88,17 +87,14 @@ class TradeViewModel @Inject constructor(
         }
     }
 
-    fun pullOwnedAmount() {
-        viewModelScope.launch {
+    // Get owned amount of an asset from the database
+    suspend fun pullOwnedAmount(symbol: String): String {
             val id: UUID = db.getAccount()!!.accountId
-            val symbol = asset.value!!.symbol
             val owned = db.getOwnedAsset(id, symbol).first().amountOwned
-            // TODO: Check if any is owned and update livedata
             Log.d(TAG, "getOwnedAmount: $owned")
-            _amountOwned.value = owned
-        }
+            // Update owned variable
+            return owned
     }
-
 
     fun pullLiquids() {
         viewModelScope.launch{
@@ -108,12 +104,19 @@ class TradeViewModel @Inject constructor(
     }
 
 
-    fun buy( sellSymbol: String, amount: String) {
+    fun buy(buySymbol: String, amount: String) {
         // Calculate price
-        // Check draft
-        // Make Transaction
+        val price = (asset.value?.priceUsd?.toBigDecimal()?.times(amount.toBigDecimal()))
+
+        viewModelScope.launch{
+            // Check draft
+            val dollars = pullOwnedAmount(referenceAsset).toBigDecimal()
+
+            // Make Transaction
+            makeTransaction(buySymbol, referenceAsset, amount, price.toString())
+        }
     }
-    fun sell(buySymbol: String,  amount: String) {
+    fun sell(sellSymbol: String,  amount: String) {
         // Calculate price
         // Check draft
         // Make Transaction
@@ -123,7 +126,7 @@ class TradeViewModel @Inject constructor(
     private fun makeTransaction(buySymbol: String, sellSymbol: String, amount: String, paid: String){
         viewModelScope.launch {
             val id: UUID = db.getAccount()!!.accountId
-            // Store the transaction
+            // Store the transaction (Not changing account holdings)
             db.insertTransaction(AssetTransaction(
                 accountId = id,
                 timestamp = System.currentTimeMillis(),
@@ -132,8 +135,10 @@ class TradeViewModel @Inject constructor(
                 outAmount = paid,
                 outCurrencySymbol = sellSymbol,
             ))
+            Log.d(TAG, "makeTransaction: paid $paid to buy $amount + $buySymbol")
             // Increase and decrease Owned Amounts
-            db.insertOwnedAsset(AssetAmount(id, sellSymbol, "something"))
+            // TODO: Get this logic straight. Do you add or overwrite?
+            //db.insertOwnedAsset(AssetAmount(id, sellSymbol, "amount here please"))
         }
     }
 }
