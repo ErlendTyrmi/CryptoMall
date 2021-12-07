@@ -29,12 +29,11 @@ fun TradeTopBar(asset: Asset?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.DarkGray)
+
     ) {
         asset?.let {
             Image(
                 painter = rememberImagePainter(
-                    //data = "https://static.coincap.io/assets/icons/btc@2x.png"
                     data = "https://static.coincap.io/assets/icons/" + asset.symbol.lowercase() + "@2x.png",
                 ),
                 contentDescription = asset.name + " logo",

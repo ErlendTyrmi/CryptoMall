@@ -4,6 +4,7 @@
 
 package com.erlend.cryptomall.view.ui.composables.asset
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -32,11 +33,11 @@ fun AssetSearchBar(assetViewModel: AssetViewModel) {
         onValueChange = { query.value = it },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp).background(MaterialTheme.colors.secondary),
         label = {
-            Text(text = "Search", color = MaterialTheme.colors.onSurface)
+            Text(text = "Search", color = MaterialTheme.colors.onBackground)
         },
-        textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+        textStyle = TextStyle(color = MaterialTheme.colors.onBackground),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Search,

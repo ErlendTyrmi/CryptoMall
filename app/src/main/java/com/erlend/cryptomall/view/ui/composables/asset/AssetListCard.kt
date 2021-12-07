@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -35,7 +36,6 @@ fun AssetListCard(
     ) {
         Image(
             painter = rememberImagePainter(
-                //data = "https://static.coincap.io/assets/icons/btc@2x.png"
                 data = "https://static.coincap.io/assets/icons/" + asset.symbol.lowercase() + "@2x.png",
             ),
             contentDescription = asset.name + " logo",
@@ -68,7 +68,7 @@ fun AssetListCard(
         }
     }
     Divider(
-        color = Color.DarkGray,
+        color = MaterialTheme.colors.secondary,
         thickness = 1.dp,
         modifier = Modifier.padding(16.dp),
     )

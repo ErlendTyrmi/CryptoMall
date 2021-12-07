@@ -40,7 +40,7 @@ class TradeViewModel @Inject constructor(
 
     // Mutable live data
     // Owned amount of one asset
-    private val _amountOwned = MutableLiveData<String>("-1")
+    private val _amountOwned = MutableLiveData<String>("0")
     val amountOwned: LiveData<String>
         get() = _amountOwned
 

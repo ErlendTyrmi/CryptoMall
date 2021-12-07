@@ -4,12 +4,15 @@
 
 package com.erlend.cryptomall.view.ui.composables.trade
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.TextField
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 
@@ -18,8 +21,36 @@ import com.erlend.cryptomall.view.viewModels.TradeViewModel
 // Subpage of currency
 
 @Composable
-fun Buy(navController: NavHostController, tradeModel: TradeViewModel) {
-    Box(modifier = Modifier.fillMaxSize()){
-        Text(text = "Buy here!", modifier = Modifier.align(Alignment.Center))
+fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol: String) {
+
+    val asset by tradeViewModel.getAssetLocal().observeAsState()
+    tradeViewModel.pullAssetRemote(symbol)
+    tradeViewModel.observeAssetLocal(symbol)
+
+    var text by remember { mutableStateOf("0") }
+
+    Column() {
+        TradeTopBar(asset = asset)
+        Box(modifier = Modifier.fillMaxSize()){
+            Column(modifier = Modifier.align(Alignment.Center).padding(16.dp, 0.dp)){
+
+                TextField(
+                    modifier = Modifier.fillMaxWidth().padding(0.dp, 16.dp),
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text("Enter amount") }
+                )
+
+                Button(
+                    modifier = Modifier.fillMaxWidth().padding(0.dp, 16.dp),
+                    onClick = { navController.navigate("buy/$symbol") }
+                ) {
+                    Text(text = "Buy ${asset?.name}", Modifier.padding(8.dp))
+                }
+            }
+
+        }
+
     }
+
 }
