@@ -4,6 +4,7 @@
 
 package com.erlend.cryptomall.view.viewModels
 
+import android.icu.math.MathContext
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,16 +18,14 @@ import com.erlend.cryptomall.repo.dto.dtoConversion.toAsset
 import com.erlend.cryptomall.repo.local.LocalDao
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.lang.Exception
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 import javax.inject.Inject
 
@@ -49,9 +48,9 @@ class TradeViewModel @Inject constructor(
     private val asset = MutableLiveData(Asset())
 
     // Account ID - Created on first boot
-    private val _liquids = MutableLiveData<String>()
-    val liquids: LiveData<String>
-        get() = _liquids
+    private val _dollarsOwned = MutableLiveData<String>()
+    val dollarsOwned: LiveData<String>
+        get() = _dollarsOwned
 
     fun updateAssetLocal(symbol: String) {
         // Get assets from local, observe as LiveData
@@ -89,6 +88,14 @@ class TradeViewModel @Inject constructor(
         }
     }
 
+    fun updateOwnedAmount(){
+        viewModelScope.launch {
+            asset.value?.let {
+                _amountOwned.value = pullOwnedAmount(it.symbol)?.amountOwned
+            }
+        }
+    }
+
     // Get owned amount of an asset from the database
     private suspend fun pullOwnedAmount(symbol: String): AssetAmount? {
         val id = db.getAccount()!!.accountId
@@ -101,25 +108,50 @@ class TradeViewModel @Inject constructor(
         return owned
     }
 
-    fun buy(buySymbol: String, amount: String): Boolean {
+    fun updateDollarsOwned(){
+        viewModelScope.launch {
+            _dollarsOwned.value = pullOwnedAmount(referenceAsset)?.amountOwned
+        }
+    }
+
+    fun checkDraft(amount: String): Boolean {
+
+        // Always true for non zero
+        if (amount.isEmpty()) return false
+
+        // Else if can't parse string
+        try{
+            amount.toBigDecimal()
+        } catch (e: Exception){
+            Log.d(TAG, "checkDraft: Cannot convert amount: '$amount' to BigDecimal")
+            return false
+        }
+
+        // Check draft
+        val price = asset.value?.priceUsd
+        return (
+                dollarsOwned.value != null
+                        && price != null
+                        && dollarsOwned.value!!.toBigDecimal()
+                .compareTo(amount.toBigDecimal().times(price.toBigDecimal())) > -1 // If enough cash to buy
+        )
+    }
+
+    fun getCurrentTotalPrice(amount: String): String {
+        val sum = amount.toBigDecimal().times(asset.value!!.priceUsd.toBigDecimal())
+        val rounded = sum.setScale(5, BigDecimal.ROUND_HALF_UP)
+        return rounded.toPlainString()
+    }
+
+    fun buy(buySymbol: String, amount: String){
         var result = false
         // Calculate price
         val price = (asset.value?.priceUsd?.toBigDecimal()?.times(amount.toBigDecimal()))
         viewModelScope.launch {
             // Check draft
-            val dollars = pullOwnedAmount(referenceAsset)
-            if (dollars == null || price == null || dollars.amountOwned.toBigDecimal()
-                    .compareTo(amount.toBigDecimal().times(price)) < 1
-            ) {
-                result = false
-            } else {
-
-                // Make Transaction
+            if (checkDraft(amount))
                 makeTransaction(buySymbol, referenceAsset, amount, price.toString())
-                result = true
-            }
         }
-        return result
     }
 
     fun sell(sellSymbol: String, amount: String) {
@@ -162,7 +194,8 @@ class TradeViewModel @Inject constructor(
 
             // Set the new balance for bought asset
             newBoughtBalance = if (boughtAsset != null &&
-                boughtAsset.amountOwned.toBigDecimal().compareTo(BigDecimal(0)) == 1 // If more than zero
+                boughtAsset.amountOwned.toBigDecimal()
+                    .compareTo(BigDecimal(0)) == 1 // If more than zero
             ) {
                 boughtAsset.amountOwned.toBigDecimal() + bought.toBigDecimal()
             } else {

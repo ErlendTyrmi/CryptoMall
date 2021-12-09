@@ -8,12 +8,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 // Icon name symbol (abbrev. eg. BTC) rate in header
 // Owned amount and dollar value of this
@@ -26,6 +30,7 @@ fun Currency(navController: NavHostController, tradeViewModel: TradeViewModel, s
     val asset by tradeViewModel.getAssetLocal().observeAsState()
     tradeViewModel.pullAssetRemote(symbol)
     tradeViewModel.updateAssetLocal(symbol)
+    tradeViewModel.updateOwnedAmount()
 
     Column() {
         TradeTopBar(asset)
