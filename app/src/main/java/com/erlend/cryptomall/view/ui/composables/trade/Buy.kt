@@ -32,9 +32,11 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
     val asset by tradeViewModel.getAssetLocal().observeAsState()
     tradeViewModel.pullAssetRemote(symbol)
     tradeViewModel.updateAssetLocal(symbol)
+    tradeViewModel.updateDollarsOwned()
 
     var amountText by remember { mutableStateOf("") }
     val openDialog = remember { mutableStateOf(false) }
+    val openError = remember { mutableStateOf(false) }
 
 
     Column() {
@@ -48,18 +50,11 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
 
                 if (openDialog.value) {
                     AlertDialog(
-                        onDismissRequest = {
-                            openDialog.value = false
-                        },
-                        title = {
-                            Text(text = "Buy $symbol")
-                        },
-                        text = {
-                            Text("Are you sure you want to buy $amountText $symbol")
-                        },
+                        onDismissRequest = { openDialog.value = false },
+                        title = { Text(text = "Buy $symbol") },
+                        text = { Text("Are you sure you want to buy $amountText $symbol?") },
                         confirmButton = {
-                            Button(
-                                onClick = {
+                            Button( onClick = {
                                     tradeViewModel.buy(symbol, amountText)
                                     openDialog.value = false
                                     navController.navigate("currency/$symbol")
@@ -67,16 +62,26 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                                 Text("Buy")
                             }
                         },
-                        dismissButton = {
-                            Button(
-                                onClick = {
-                                    openDialog.value = false
-                                }) {
+                        dismissButton = { Button(
+                                onClick = { openDialog.value = false }) {
                                 Text("Cancel")
                             }
                         }
                     )
+                }
 
+                if (openError.value) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            openError.value = false
+                        },
+                        title = { Text(text = "Buy $symbol") },
+                        text = { Text("You don't have that kind of cash.") },
+                        confirmButton = { Button( onClick = { openError.value = false }) {
+                                Text("OK")
+                            }
+                        },
+                    )
                 }
 
                 TextField(
@@ -90,10 +95,18 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                 )
 
                 Button(
+                    enabled = tradeViewModel.checkDraft(amountText),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.dp, 16.dp),
-                    onClick = { openDialog.value = true }
+                    onClick = {
+                        if (tradeViewModel.checkDraft(amountText)) {
+                            openDialog.value = true
+                        } else {
+                            // In case the button is not disabled
+                            openError.value = true
+                        }
+                    }
                 ) {
                     Text(text = "Buy ${asset?.name}", Modifier.padding(8.dp))
                 }

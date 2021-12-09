@@ -17,10 +17,7 @@ import com.erlend.cryptomall.repo.dto.dtoConversion.toAsset
 import com.erlend.cryptomall.repo.local.LocalDao
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -49,9 +46,9 @@ class TradeViewModel @Inject constructor(
     private val asset = MutableLiveData(Asset())
 
     // Account ID - Created on first boot
-    private val _liquids = MutableLiveData<String>()
-    val liquids: LiveData<String>
-        get() = _liquids
+    private val _dollarsOwned = MutableLiveData<String>()
+    val dollarsOwned: LiveData<String>
+        get() = _dollarsOwned
 
     fun updateAssetLocal(symbol: String) {
         // Get assets from local, observe as LiveData
@@ -101,25 +98,36 @@ class TradeViewModel @Inject constructor(
         return owned
     }
 
-    fun buy(buySymbol: String, amount: String): Boolean {
+    fun updateDollarsOwned(){
+        viewModelScope.launch {
+            _dollarsOwned.value = pullOwnedAmount(referenceAsset)?.amountOwned
+        }
+    }
+
+    fun checkDraft(amount: String): Boolean {
+
+        // Always true for non zero
+        if (amount.length < 1) return true
+
+        // Check draft
+        val price = asset.value?.priceUsd
+        return (
+                dollarsOwned.value != null
+                        && price != null
+                        && dollarsOwned.value!!.toBigDecimal()
+                .compareTo(amount.toBigDecimal().times(price.toBigDecimal())) > -1 // If enough cash to buy
+        )
+    }
+
+    fun buy(buySymbol: String, amount: String){
         var result = false
         // Calculate price
         val price = (asset.value?.priceUsd?.toBigDecimal()?.times(amount.toBigDecimal()))
         viewModelScope.launch {
             // Check draft
-            val dollars = pullOwnedAmount(referenceAsset)
-            if (dollars == null || price == null || dollars.amountOwned.toBigDecimal()
-                    .compareTo(amount.toBigDecimal().times(price)) < 1
-            ) {
-                result = false
-            } else {
-
-                // Make Transaction
+            if (checkDraft(amount))
                 makeTransaction(buySymbol, referenceAsset, amount, price.toString())
-                result = true
-            }
         }
-        return result
     }
 
     fun sell(sellSymbol: String, amount: String) {
@@ -162,7 +170,8 @@ class TradeViewModel @Inject constructor(
 
             // Set the new balance for bought asset
             newBoughtBalance = if (boughtAsset != null &&
-                boughtAsset.amountOwned.toBigDecimal().compareTo(BigDecimal(0)) == 1 // If more than zero
+                boughtAsset.amountOwned.toBigDecimal()
+                    .compareTo(BigDecimal(0)) == 1 // If more than zero
             ) {
                 boughtAsset.amountOwned.toBigDecimal() + bought.toBigDecimal()
             } else {
