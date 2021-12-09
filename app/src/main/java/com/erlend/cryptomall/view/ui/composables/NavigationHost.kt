@@ -29,7 +29,7 @@ fun NavHost(
     startDestination: String = "overview",
     accountViewModel: AccountViewModel,
     assetViewModel: AssetViewModel,
-    tradeViewModel: TradeViewModel, // TODO: Move navhost to Activity, Inject in navHost
+    tradeViewModel: TradeViewModel,
 ) {
 
     NavHost(
@@ -70,7 +70,7 @@ fun NavHost(
             // Path argument
             arguments = listOf(navArgument("symbol") { type = NavType.StringType })
         ) { // Path argument boiler plate
-            backStackEntry ->
+                backStackEntry ->
             backStackEntry.arguments?.getString("symbol")?.let {
                 Currency(
                     navController = navController,
@@ -79,17 +79,35 @@ fun NavHost(
                 )
             }
         }
-            composable(route = "buy") {
+
+        composable(
+            route = "buy/{symbol}",
+            // Path argument
+            arguments = listOf(navArgument("symbol") { type = NavType.StringType })
+        ) { // Path argument boiler plate
+                backStackEntry ->
+            backStackEntry.arguments?.getString("symbol")?.let {
                 Buy(
                     navController = navController,
-                    tradeModel = tradeViewModel
+                    tradeViewModel = tradeViewModel,
+                    it
                 )
             }
-            composable(route = "sell") {
+        }
+
+        composable(
+            route = "sell/{symbol}",
+            // Path argument
+            arguments = listOf(navArgument("symbol") { type = NavType.StringType })
+        ) { // Path argument boiler plate
+                backStackEntry ->
+            backStackEntry.arguments?.getString("symbol")?.let {
                 Sell(
                     navController = navController,
-                    tradeModel = tradeViewModel
+                    tradeModel = tradeViewModel,
+                    it
                 )
             }
         }
     }
+}

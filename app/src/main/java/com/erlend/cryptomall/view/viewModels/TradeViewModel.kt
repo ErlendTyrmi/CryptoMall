@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,7 +41,7 @@ class TradeViewModel @Inject constructor(
 
     // Mutable live data
     // Owned amount of one asset
-    private val _amountOwned = MutableLiveData<String>("-1")
+    private val _amountOwned = MutableLiveData<String>("0")
     val amountOwned: LiveData<String>
         get() = _amountOwned
 
@@ -52,14 +53,13 @@ class TradeViewModel @Inject constructor(
         get() = _liquids
 
     fun observeAssetLocal(symbol: String) {
-
         // Get assets from local, observe as LiveData
         viewModelScope.launch {
             db.getAsset(symbol).distinctUntilChanged().collect { asset.value = it }
         }
-
     }
 
+    // Get the asset stored in this ViewModel
     fun getAssetLocal(): LiveData<Asset> {
         return asset
     }
@@ -88,17 +88,14 @@ class TradeViewModel @Inject constructor(
         }
     }
 
-    fun pullOwnedAmount() {
-        viewModelScope.launch {
+    // Get owned amount of an asset from the database
+    private suspend fun pullOwnedAmount(symbol: String): String {
             val id: UUID = db.getAccount()!!.accountId
-            val symbol = asset.value!!.symbol
             val owned = db.getOwnedAsset(id, symbol).first().amountOwned
-            // TODO: Check if any is owned and update livedata
             Log.d(TAG, "getOwnedAmount: $owned")
-            _amountOwned.value = owned
-        }
+            // Update owned variable
+            return owned
     }
-
 
     fun pullLiquids() {
         viewModelScope.launch{
@@ -108,32 +105,66 @@ class TradeViewModel @Inject constructor(
     }
 
 
-    fun buy( sellSymbol: String, amount: String) {
+    fun buy(buySymbol: String, amount: String) {
         // Calculate price
-        // Check draft
-        // Make Transaction
+        val price = (asset.value?.priceUsd?.toBigDecimal()?.times(amount.toBigDecimal()))
+
+        viewModelScope.launch{
+            // Check draft
+            val dollars = pullOwnedAmount(referenceAsset).toBigDecimal()
+            Log.d(TAG, "buy: You own $dollars dollars")
+            // TODO: check if enough dough for this purchase
+
+            // Make Transaction
+            makeTransaction(buySymbol, referenceAsset, amount, price.toString())
+        }
     }
-    fun sell(buySymbol: String,  amount: String) {
+    fun sell(sellSymbol: String,  amount: String) {
         // Calculate price
         // Check draft
         // Make Transaction
     }
 
     // Selling is buying dollars :-)
-    private fun makeTransaction(buySymbol: String, sellSymbol: String, amount: String, paid: String){
+    private fun makeTransaction(buySymbol: String, sellSymbol: String, bought: String, sold: String){
         viewModelScope.launch {
             val id: UUID = db.getAccount()!!.accountId
-            // Store the transaction
+
+            // Store the transaction (Not changing account holdings)
             db.insertTransaction(AssetTransaction(
                 accountId = id,
                 timestamp = System.currentTimeMillis(),
-                inAmount = amount,
+                inAmount = bought,
                 inCurrencySymbol = buySymbol,
-                outAmount = paid,
+                outAmount = sold,
                 outCurrencySymbol = sellSymbol,
             ))
-            // Increase and decrease Owned Amounts
-            db.insertOwnedAsset(AssetAmount(id, sellSymbol, "something"))
+            Log.d(TAG, "makeTransaction: paying $sold to buy $bought coins of $buySymbol")
+
+            // Pay
+            val oldPaidBalance = db.getOwnedAsset(id, sellSymbol).first()
+            val newPaidBalance = oldPaidBalance.amountOwned.toBigDecimal() - sold.toBigDecimal()
+            db.deleteOwnedAsset(oldPaidBalance)
+            db.insertOwnedAsset(AssetAmount(id, sellSymbol, newPaidBalance.toString()))
+
+            // Update bought asset
+            lateinit var newBoughtBalance: BigDecimal
+
+            val boughtAssetAsList = db.getOwnedAsset(id, buySymbol)
+            newBoughtBalance = if (boughtAssetAsList.isNotEmpty()){
+                val oldBoughtBalance = boughtAssetAsList.first()
+                oldBoughtBalance.amountOwned.toBigDecimal() + bought.toBigDecimal()
+            } else {
+                bought.toBigDecimal()
+            }
+            val newOwnedAsset = AssetAmount(id, buySymbol, newBoughtBalance.toString())
+            Log.d(TAG, "makeTransaction: inserting $newOwnedAsset")
+            db.insertOwnedAsset(newOwnedAsset).let {
+                // Debug log result
+                val updatedAsset = db.getOwnedAsset(id, buySymbol).first()
+                Log.d(TAG, "makeTransaction: Updated asset: " + updatedAsset)
+                _amountOwned.value = updatedAsset.amountOwned
+            }
         }
     }
 }

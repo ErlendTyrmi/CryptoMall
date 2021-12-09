@@ -6,7 +6,16 @@ package com.erlend.cryptomall.view.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
+
+
+
+// Brown theme
+val coffeeDark = Color(0xff6F4E37)
 val Teal200 = Color(0xFF03DAC5)
+val camelLight = Color(0xffC19A6B)
+val yellowishBrown = Color(0xffE5AA70)
+val copper = Color(0xffB87333)
+val almondShade = Color(0x66EADDCA)
+val lightBeige = Color(0xfff6efe2)
+val bagBrown = Color(0xffc79151)
+val blueDust = Color(0xff00a6e5)

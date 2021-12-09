@@ -18,8 +18,8 @@ import com.erlend.cryptomall.view.viewModels.TradeViewModel
 // Subpage of Currency
 
 @Composable
-fun Sell(navController: NavHostController, tradeModel: TradeViewModel) {
+fun Sell(navController: NavHostController, tradeModel: TradeViewModel, symbol: String) {
     Box(modifier = Modifier.fillMaxSize()){
-        Text(text = "Currency here!", modifier = Modifier.align(Alignment.Center))
+        Text(text = "Sell $symbol here!", modifier = Modifier.align(Alignment.Center))
     }
 }
