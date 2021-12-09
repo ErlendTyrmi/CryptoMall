@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -88,7 +89,7 @@ class TradeViewModel @Inject constructor(
     }
 
     // Get owned amount of an asset from the database
-    suspend fun pullOwnedAmount(symbol: String): String {
+    private suspend fun pullOwnedAmount(symbol: String): String {
             val id: UUID = db.getAccount()!!.accountId
             val owned = db.getOwnedAsset(id, symbol).first().amountOwned
             Log.d(TAG, "getOwnedAmount: $owned")
@@ -111,6 +112,8 @@ class TradeViewModel @Inject constructor(
         viewModelScope.launch{
             // Check draft
             val dollars = pullOwnedAmount(referenceAsset).toBigDecimal()
+            Log.d(TAG, "buy: You own $dollars dollars")
+            // TODO: check if enough dough for this purchase
 
             // Make Transaction
             makeTransaction(buySymbol, referenceAsset, amount, price.toString())
@@ -123,22 +126,45 @@ class TradeViewModel @Inject constructor(
     }
 
     // Selling is buying dollars :-)
-    private fun makeTransaction(buySymbol: String, sellSymbol: String, amount: String, paid: String){
+    private fun makeTransaction(buySymbol: String, sellSymbol: String, bought: String, sold: String){
         viewModelScope.launch {
             val id: UUID = db.getAccount()!!.accountId
+
             // Store the transaction (Not changing account holdings)
             db.insertTransaction(AssetTransaction(
                 accountId = id,
                 timestamp = System.currentTimeMillis(),
-                inAmount = amount,
+                inAmount = bought,
                 inCurrencySymbol = buySymbol,
-                outAmount = paid,
+                outAmount = sold,
                 outCurrencySymbol = sellSymbol,
             ))
-            Log.d(TAG, "makeTransaction: paid $paid to buy $amount + $buySymbol")
-            // Increase and decrease Owned Amounts
-            // TODO: Get this logic straight. Do you add or overwrite?
-            //db.insertOwnedAsset(AssetAmount(id, sellSymbol, "amount here please"))
+            Log.d(TAG, "makeTransaction: paying $sold to buy $bought coins of $buySymbol")
+
+            // Pay
+            val oldPaidBalance = db.getOwnedAsset(id, sellSymbol).first()
+            val newPaidBalance = oldPaidBalance.amountOwned.toBigDecimal() - sold.toBigDecimal()
+            db.deleteOwnedAsset(oldPaidBalance)
+            db.insertOwnedAsset(AssetAmount(id, sellSymbol, newPaidBalance.toString()))
+
+            // Update bought asset
+            lateinit var newBoughtBalance: BigDecimal
+
+            val boughtAssetAsList = db.getOwnedAsset(id, buySymbol)
+            newBoughtBalance = if (boughtAssetAsList.isNotEmpty()){
+                val oldBoughtBalance = boughtAssetAsList.first()
+                oldBoughtBalance.amountOwned.toBigDecimal() + bought.toBigDecimal()
+            } else {
+                bought.toBigDecimal()
+            }
+            val newOwnedAsset = AssetAmount(id, buySymbol, newBoughtBalance.toString())
+            Log.d(TAG, "makeTransaction: inserting $newOwnedAsset")
+            db.insertOwnedAsset(newOwnedAsset).let {
+                // Debug log result
+                val updatedAsset = db.getOwnedAsset(id, buySymbol).first()
+                Log.d(TAG, "makeTransaction: Updated asset: " + updatedAsset)
+                _amountOwned.value = updatedAsset.amountOwned
+            }
         }
     }
 }
