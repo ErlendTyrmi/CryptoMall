@@ -35,7 +35,7 @@ interface LocalDao {
     fun searchAssets(search: String): Flow<List<Asset>>
 
     @Query("SELECT * FROM asset where symbol LIKE :symbol")
-    fun getAsset(symbol: String): Flow<Asset>
+    suspend fun getAsset(symbol: String): Asset
 
     // Asset Ownership
 

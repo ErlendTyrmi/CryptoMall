@@ -4,9 +4,8 @@
 
 package com.erlend.cryptomall.view.ui.composables.trade
 
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -16,11 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 
@@ -28,12 +24,14 @@ import com.erlend.cryptomall.view.viewModels.TradeViewModel
 // Auto update price in dollars
 // Subpage of currency
 
+const val TAG = "Buy"
+
 @Composable
 fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol: String) {
 
     val asset by tradeViewModel.getAssetLocal().observeAsState()
     tradeViewModel.pullAssetRemote(symbol)
-    tradeViewModel.observeAssetLocal(symbol)
+    tradeViewModel.updateAssetLocal(symbol)
 
     var amountText by remember { mutableStateOf("") }
     val openDialog = remember { mutableStateOf(false) }
@@ -41,12 +39,14 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
 
     Column() {
         TradeTopBar(asset = asset)
-        Box(modifier = Modifier.fillMaxSize()){
-            Column(modifier = Modifier
-                .align(Alignment.Center)
-                .padding(16.dp, 0.dp)){
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(16.dp, 0.dp)
+            ) {
 
-                if (openDialog.value){
+                if (openDialog.value) {
                     AlertDialog(
                         onDismissRequest = {
                             openDialog.value = false
@@ -62,6 +62,7 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                                 onClick = {
                                     tradeViewModel.buy(symbol, amountText)
                                     openDialog.value = false
+                                    navController.navigate("currency/$symbol")
                                 }) {
                                 Text("Buy")
                             }
@@ -84,7 +85,7 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                         .padding(0.dp, 16.dp),
                     value = amountText,
                     onValueChange = { amountText = it },
-                    label = { Text("Enter amount")},
+                    label = { Text("Enter amount") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
@@ -92,7 +93,7 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.dp, 16.dp),
-                    onClick = {openDialog.value = true}
+                    onClick = { openDialog.value = true }
                 ) {
                     Text(text = "Buy ${asset?.name}", Modifier.padding(8.dp))
                 }

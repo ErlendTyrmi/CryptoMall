@@ -26,6 +26,11 @@ fun AccountTopBar(accountViewModel: AccountViewModel) {
 
     val points = accountViewModel.points.observeAsState()
     val id = accountViewModel.accountId.observeAsState()
+
+    id.value?.let {
+        accountViewModel.updatePointsSum(it)
+    }
+
     Surface() {
         Row (modifier = Modifier.fillMaxWidth().padding(8.dp)){
 

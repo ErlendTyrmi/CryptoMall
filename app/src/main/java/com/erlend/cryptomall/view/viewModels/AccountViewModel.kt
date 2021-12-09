@@ -13,7 +13,10 @@ import com.erlend.cryptomall.domain.model.entities.*
 import com.erlend.cryptomall.repo.local.LocalDao
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.*
@@ -50,7 +53,7 @@ class AccountViewModel @Inject constructor(
                 updatePointsSum(account!!.accountId)
                 Log.d(TAG, "getAccountOrCreate: Found account " + accountId.value)
             } else {
-                val id = UUID.randomUUID() // Mock receiving new id from db
+                val id = UUID.randomUUID() // Create random internal id
                 _accountId.value = id
                 setupAccount(id)
             }
@@ -69,7 +72,8 @@ class AccountViewModel @Inject constructor(
         db.insertOwnedAsset(AssetAmount(id, referenceAsset, amount.toString()))
 
         // Add first transaction
-        db.insertTransaction(AssetTransaction(
+        db.insertTransaction(
+            AssetTransaction(
                 accountId = id,
                 timestamp = System.currentTimeMillis(),
                 inAmount = amount.toString(),
@@ -84,22 +88,24 @@ class AccountViewModel @Inject constructor(
     }
 
     // Calculate points
-    private fun updatePointsSum(id: UUID) {
+    fun updatePointsSum(id: UUID) {
         viewModelScope.launch {
             var sum = BigDecimal(0)
             val assetAmounts = db.getOwnedAssets(id)
 
             assetAmounts.forEach { assetAmount ->
-                Log.d(TAG, "updatePointsSum: " + assetAmount)
+                Log.d(TAG, "updatePointsSum: $assetAmount")
                 if (assetAmount.assetSymbol == referenceAsset) {
+                    // Update dollars
                     sum = sum.add(assetAmount.amountOwned.toBigDecimal())
                 } else {
-                    db.getAsset(assetAmount.assetSymbol).collect { asset ->
+                    // Update other owned assets
+                    val asset = db.getAsset(assetAmount.assetSymbol)
                         sum = sum.add(
                             asset.priceUsd.toBigDecimal()
                                 .times(assetAmount.amountOwned.toBigDecimal())
                         )
-                    }
+
                 }
             }
 
