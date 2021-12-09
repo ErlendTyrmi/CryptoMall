@@ -4,6 +4,7 @@
 
 package com.erlend.cryptomall.view.viewModels
 
+import android.icu.math.MathContext
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,6 +25,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.lang.Exception
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 import javax.inject.Inject
 
@@ -86,6 +88,14 @@ class TradeViewModel @Inject constructor(
         }
     }
 
+    fun updateOwnedAmount(){
+        viewModelScope.launch {
+            asset.value?.let {
+                _amountOwned.value = pullOwnedAmount(it.symbol)?.amountOwned
+            }
+        }
+    }
+
     // Get owned amount of an asset from the database
     private suspend fun pullOwnedAmount(symbol: String): AssetAmount? {
         val id = db.getAccount()!!.accountId
@@ -107,7 +117,15 @@ class TradeViewModel @Inject constructor(
     fun checkDraft(amount: String): Boolean {
 
         // Always true for non zero
-        if (amount.length < 1) return true
+        if (amount.isEmpty()) return false
+
+        // Else if can't parse string
+        try{
+            amount.toBigDecimal()
+        } catch (e: Exception){
+            Log.d(TAG, "checkDraft: Cannot convert amount: '$amount' to BigDecimal")
+            return false
+        }
 
         // Check draft
         val price = asset.value?.priceUsd
@@ -117,6 +135,12 @@ class TradeViewModel @Inject constructor(
                         && dollarsOwned.value!!.toBigDecimal()
                 .compareTo(amount.toBigDecimal().times(price.toBigDecimal())) > -1 // If enough cash to buy
         )
+    }
+
+    fun getCurrentTotalPrice(amount: String): String {
+        val sum = amount.toBigDecimal().times(asset.value!!.priceUsd.toBigDecimal())
+        val rounded = sum.setScale(5, BigDecimal.ROUND_HALF_UP)
+        return rounded.toPlainString()
     }
 
     fun buy(buySymbol: String, amount: String){

@@ -4,7 +4,6 @@
 
 package com.erlend.cryptomall.view.ui.composables.trade
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
@@ -52,7 +51,7 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                     AlertDialog(
                         onDismissRequest = { openDialog.value = false },
                         title = { Text(text = "Buy $symbol") },
-                        text = { Text("Are you sure you want to buy $amountText $symbol?") },
+                        text = { Text("Are you sure you want to buy $amountText $symbol for USD ${tradeViewModel.getCurrentTotalPrice(amountText)}?") },
                         confirmButton = {
                             Button( onClick = {
                                     tradeViewModel.buy(symbol, amountText)
