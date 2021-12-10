@@ -88,9 +88,10 @@ class TradeViewModel @Inject constructor(
 
     fun updateOwnedAmount(){
         viewModelScope.launch {
-            _amountOwned.value = "0"
             asset.value?.let {
                 _amountOwned.value = pullOwnedAmount(it.symbol)?.amountOwned
+                if (amountOwned.value == null || amountOwned.value == "null"){_amountOwned.value = "0"}
+                Log.d(TAG, "updateOwnedAmount: amountOwned is now ${amountOwned.value} ")
             }
         }
     }
@@ -158,10 +159,15 @@ class TradeViewModel @Inject constructor(
             // Calculate price
             val price = assetCopy.priceUsd.toBigDecimal()
                 .times(amount.toBigDecimal())
+
+            // Update owned amount
+            updateOwnedAmount()
+
+            // Check draft, make Transaction
             viewModelScope.launch {
-                // Check draft, make Transaction
                 val owned = amountOwned.value?.toBigDecimal() ?: BigDecimal("0")
-                if (owned > price){
+                Log.d(TAG, "sell: Before transaction, owned is $owned, amount is $amount, price is $price. ")
+                if (owned > amount.toBigDecimal()){
                     makeTransaction(
                         buySymbol = referenceAsset, // buying dollars
                         sellSymbol = sellSymbol,
@@ -234,6 +240,7 @@ class TradeViewModel @Inject constructor(
                     outCurrencySymbol = sellSymbol,
                 )
             )
+            updateOwnedAmount()
             Log.d(TAG, "makeTransaction: paying $sold to buy $bought coins of $buySymbol")
         }
     }

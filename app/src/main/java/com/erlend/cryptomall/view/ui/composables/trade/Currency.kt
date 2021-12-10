@@ -7,13 +7,11 @@ package com.erlend.cryptomall.view.ui.composables.trade
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 import kotlinx.coroutines.coroutineScope
@@ -28,31 +26,67 @@ import kotlinx.coroutines.launch
 fun Currency(navController: NavHostController, tradeViewModel: TradeViewModel, symbol: String) {
 
     val asset by tradeViewModel.getAssetLocal().observeAsState()
+    val amountOwned = tradeViewModel.amountOwned.value
+
+    // Show/hide buy sell menus
+    val showBuy = remember { mutableStateOf(false) }
+    val showSell = remember { mutableStateOf(false) }
+
+
     tradeViewModel.pullAssetRemote(symbol)
     tradeViewModel.updateAssetLocal(symbol)
     tradeViewModel.updateOwnedAmount()
 
     Column() {
         TradeTopBar(asset)
-        Column(modifier = Modifier.padding(16.dp).fillMaxHeight()) {
-            Text("You own " + tradeViewModel.amountOwned.value, modifier = Modifier.fillMaxWidth().weight(4f))
-            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxHeight()
+        ) {
+            Text(
+                "You own $amountOwned", modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(4f)
+            )
+            // Show buy and sell here instead of navigating
+            if (showBuy.value && ! showSell.value)
+                Buy(navController, tradeViewModel, symbol)
+
+            if (showSell.value && ! showBuy.value)
+                Sell(navController, tradeViewModel, symbol)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
                 Button(
-                    modifier = Modifier.weight(1F).padding(16.dp),
-                    onClick = { navController.navigate("buy/$symbol") }
+                    enabled = !showBuy.value,
+                    modifier = Modifier
+                        .weight(1F)
+                        .padding(16.dp),
+                    onClick = {
+                        showBuy.value = true //navController.navigate("buy/$symbol")
+                        showSell.value = false
+                    }
                 ) {
                     Text(text = "Buy ${asset?.name}")
                 }
                 Button(
-                    modifier = Modifier.weight(1F).padding(16.dp),
-                    onClick = { navController.navigate("sell/$symbol") }
+                    enabled = !showSell.value,
+                    modifier = Modifier
+                        .weight(1F)
+                        .padding(16.dp),
+                    onClick = {
+                        showSell.value = true
+                        showBuy.value = false
+                        //navController.navigate("sell/$symbol")
+                    }
                 ) {
                     Text(text = "Sell ${asset?.name}")
                 }
             }
-
         }
+
     }
-
-
 }

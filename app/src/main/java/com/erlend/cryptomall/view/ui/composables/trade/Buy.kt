@@ -38,8 +38,7 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
     val openError = remember { mutableStateOf(false) }
 
     Column() {
-        TradeTopBar(asset = asset)
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -55,7 +54,7 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                             Button( onClick = {
                                     tradeViewModel.buy(symbol, amountText)
                                     openDialog.value = false
-                                    navController.navigate("currency/$symbol")
+                                    //navController.navigate("currency/$symbol")
                                 }) {
                                 Text("Buy")
                             }
@@ -106,7 +105,7 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                         }
                     }
                 ) {
-                    Text(text = "Buy ${asset?.name}", Modifier.padding(8.dp))
+                    Text(text = "BUY", Modifier.padding(8.dp))
                 }
             }
         }

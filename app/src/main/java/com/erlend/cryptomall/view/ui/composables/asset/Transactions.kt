@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -33,15 +34,26 @@ fun Transactions(navController: NavHostController, assetModel: AssetViewModel, a
 
     Column {
         AccountTopBar(accountViewModel, navController)
-        Box(modifier = Modifier.fillMaxWidth()){
+
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp)){
+
+            Text(text = "Your transactions",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.primaryVariant,
+                modifier = Modifier.padding(0.dp, 16.dp),
+            )
+
             transactions?.let {
                 LazyColumn {
                     items(it) { trans ->
-                        Column(modifier = Modifier.padding(16.dp, 0.dp)) {
+
+                        Column() {
                             Text(text = "${Date(trans.timestamp)}", fontSize = 12.sp, color = MaterialTheme.colors.primaryVariant)
                             Text(text = "Bought ${trans.inAmount.take(8)} ${trans.inCurrencySymbol}")
                             Text("You paid ${trans.outAmount.take(5)} ${trans.outCurrencySymbol}")
                         }
+
                         Divider(
                             color = MaterialTheme.colors.secondary,
                             thickness = 1.dp,

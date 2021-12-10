@@ -35,8 +35,7 @@ fun Sell(navController: NavHostController, tradeViewModel: TradeViewModel, symbo
     val openError = remember { mutableStateOf(false) }
 
     Column() {
-        TradeTopBar(asset = asset)
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -52,7 +51,7 @@ fun Sell(navController: NavHostController, tradeViewModel: TradeViewModel, symbo
                             Button( onClick = {
                                 tradeViewModel.sell(symbol, amountText)
                                 openDialog.value = false
-                                navController.navigate("currency/$symbol")
+                                //navController.navigate("currency/$symbol")
                             }) {
                                 Text("Sell")
                             }
@@ -95,7 +94,7 @@ fun Sell(navController: NavHostController, tradeViewModel: TradeViewModel, symbo
                         .fillMaxWidth()
                         .padding(0.dp, 16.dp),
                     onClick = {
-                        if (tradeViewModel.checkDollarsOwned(amountText)) {
+                        if (tradeViewModel.checkDollarsOwned(amountText)) {// TODO: Cryptos not dollars
                             openDialog.value = true
                         } else {
                             // In case the button is not disabled
@@ -103,7 +102,7 @@ fun Sell(navController: NavHostController, tradeViewModel: TradeViewModel, symbo
                         }
                     }
                 ) {
-                    Text(text = "Sell ${asset?.name}", Modifier.padding(8.dp))
+                    Text(text = "SELL", Modifier.padding(8.dp))
                 }
             }
         }
