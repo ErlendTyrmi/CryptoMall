@@ -167,7 +167,7 @@ class TradeViewModel @Inject constructor(
             viewModelScope.launch {
                 val owned = amountOwned.value?.toBigDecimal() ?: BigDecimal("0")
                 Log.d(TAG, "sell: Before transaction, owned is $owned, amount is $amount, price is $price. ")
-                if (owned > amount.toBigDecimal()){
+                if (owned >= amount.toBigDecimal()){
                     makeTransaction(
                         buySymbol = referenceAsset, // buying dollars
                         sellSymbol = sellSymbol,

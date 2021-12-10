@@ -49,7 +49,7 @@ fun Overview(
     Column {
         AccountTopBar(accountViewModel, navController)
         AssetSearchBar(assetViewModel)
-        Box(modifier = Modifier.fillMaxSize().padding(0.dp, 16.dp)) {
+        Box(modifier = Modifier.fillMaxSize().padding(0.dp, 8.dp)) {
             // Assets are filtered by the search input field
             MessageList(
                 assets!!.filter { it.name.contains(query, ignoreCase = true) ||
