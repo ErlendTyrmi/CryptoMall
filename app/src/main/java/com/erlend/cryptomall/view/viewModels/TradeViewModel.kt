@@ -4,7 +4,6 @@
 
 package com.erlend.cryptomall.view.viewModels
 
-import android.icu.math.MathContext
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,7 +24,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.lang.Exception
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.*
 import javax.inject.Inject
 
@@ -90,6 +88,7 @@ class TradeViewModel @Inject constructor(
 
     fun updateOwnedAmount(){
         viewModelScope.launch {
+            _amountOwned.value = "0"
             asset.value?.let {
                 _amountOwned.value = pullOwnedAmount(it.symbol)?.amountOwned
             }
@@ -114,9 +113,8 @@ class TradeViewModel @Inject constructor(
         }
     }
 
-    fun checkDraft(amount: String): Boolean {
-
-        // Always true for non zero
+    fun checkDollarsOwned(amount: String): Boolean {
+        // False if nothing entered
         if (amount.isEmpty()) return false
 
         // Else if can't parse string
@@ -144,20 +142,34 @@ class TradeViewModel @Inject constructor(
     }
 
     fun buy(buySymbol: String, amount: String){
-        var result = false
         // Calculate price
         val price = (asset.value?.priceUsd?.toBigDecimal()?.times(amount.toBigDecimal()))
         viewModelScope.launch {
-            // Check draft
-            if (checkDraft(amount))
+            // Check draft, make Transaction
+            if (checkDollarsOwned(amount))
                 makeTransaction(buySymbol, referenceAsset, amount, price.toString())
         }
     }
 
     fun sell(sellSymbol: String, amount: String) {
-        // Calculate price
-        // Check draft
-        // Make Transaction
+        if (asset.value != null){
+            val assetCopy = asset.value!!
+
+            // Calculate price
+            val price = assetCopy.priceUsd.toBigDecimal()
+                .times(amount.toBigDecimal())
+            viewModelScope.launch {
+                // Check draft, make Transaction
+                val owned = amountOwned.value?.toBigDecimal() ?: BigDecimal("0")
+                if (owned > price){
+                    makeTransaction(
+                        buySymbol = referenceAsset, // buying dollars
+                        sellSymbol = sellSymbol,
+                        bought = price.toPlainString(), // in dollars
+                        sold = amount) // in currency
+             }
+            }
+        }
     }
 
     // Selling is buying dollars :-)

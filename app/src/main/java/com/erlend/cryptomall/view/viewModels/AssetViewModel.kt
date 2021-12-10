@@ -90,29 +90,4 @@ class AssetViewModel @Inject constructor(
             })
         }
     }
-
-    // TODO: Move this to main viewmodel
-//    //Get updated plain asset
-//    fun pullAssetRemote(id: String) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            api.getAsset(id).enqueue(object : Callback<AssetDtoServerResponse> {
-//                override fun onResponse(
-//                    call: Call<AssetDtoServerResponse>,
-//                    response: Response<AssetDtoServerResponse>
-//                ) {
-//                    if (response.code() == 200 && response.body() != null) {
-//                        val responseBody = response.body()!!
-//                        viewModelScope.launch(Dispatchers.IO) {
-//                            db.insertAssets(responseBody.data.toAsset())
-//                        }
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<AssetDtoServerResponse>, t: Throwable) {
-//                    Log.d(tag, "Failed to retrieve data: " + t.localizedMessage)
-//                }
-//            })
-//        }
-//    }
-
 }

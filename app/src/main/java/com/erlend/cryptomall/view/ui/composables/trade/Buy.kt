@@ -37,7 +37,6 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
     val openDialog = remember { mutableStateOf(false) }
     val openError = remember { mutableStateOf(false) }
 
-
     Column() {
         TradeTopBar(asset = asset)
         Box(modifier = Modifier.fillMaxSize()) {
@@ -94,12 +93,12 @@ fun Buy(navController: NavHostController, tradeViewModel: TradeViewModel, symbol
                 )
 
                 Button(
-                    enabled = tradeViewModel.checkDraft(amountText),
+                    enabled = tradeViewModel.checkDollarsOwned(amountText),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.dp, 16.dp),
                     onClick = {
-                        if (tradeViewModel.checkDraft(amountText)) {
+                        if (tradeViewModel.checkDollarsOwned(amountText)) {
                             openDialog.value = true
                         } else {
                             // In case the button is not disabled

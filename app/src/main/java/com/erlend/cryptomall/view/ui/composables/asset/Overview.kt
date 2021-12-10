@@ -45,7 +45,7 @@ fun Overview(
     // Log.d("overview", assets.toString())
 
     Column {
-        AccountTopBar(accountViewModel)
+        AccountTopBar(accountViewModel, navController)
         AssetSearchBar(assetViewModel)
         Box(modifier = Modifier.fillMaxSize()) {
             // Assets are filtered by the search input field

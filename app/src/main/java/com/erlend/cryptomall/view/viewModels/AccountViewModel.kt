@@ -9,15 +9,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.test.core.app.ActivityScenario.launch
 import com.erlend.cryptomall.domain.model.entities.*
 import com.erlend.cryptomall.repo.local.LocalDao
 import com.erlend.cryptomall.repo.remote.CoinCapApi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
@@ -42,6 +46,16 @@ class AccountViewModel @Inject constructor(
     private val _accountId = MutableLiveData<UUID>()
     val accountId: LiveData<UUID>
         get() = _accountId
+
+    // Owned assets as list
+    private val _ownedAssets = MutableLiveData<List<AssetAmount>>()
+    val ownedAssets: MutableLiveData<List<AssetAmount>>
+        get() = _ownedAssets
+
+    // Owned assets as list
+    private val _transactions = MutableLiveData<List<AssetTransaction>>()
+    val transactions: MutableLiveData<List<AssetTransaction>>
+        get() = _transactions
 
     // Setup account on boot
     init {
@@ -93,6 +107,9 @@ class AccountViewModel @Inject constructor(
             var sum = BigDecimal(0)
             val assetAmounts = db.getOwnedAssets(id)
 
+            // Add as livedata
+            _ownedAssets.value = assetAmounts
+
             assetAmounts.forEach { assetAmount ->
                 Log.d(TAG, "updatePointsSum: $assetAmount")
                 if (assetAmount.assetSymbol == referenceAsset) {
@@ -101,10 +118,10 @@ class AccountViewModel @Inject constructor(
                 } else {
                     // Update other owned assets
                     val asset = db.getAsset(assetAmount.assetSymbol)
-                        sum = sum.add(
-                            asset.priceUsd.toBigDecimal()
-                                .times(assetAmount.amountOwned.toBigDecimal())
-                        )
+                    sum = sum.add(
+                        asset.priceUsd.toBigDecimal()
+                            .times(assetAmount.amountOwned.toBigDecimal())
+                    )
 
                 }
             }
@@ -113,7 +130,13 @@ class AccountViewModel @Inject constructor(
             _points.value = sum.toString().take(5)
         }
     }
+
+    fun updateTransactions(){
+        viewModelScope.launch {
+        _transactions.value = accountId.value?.let { db.getTransactions(it) }
+    }}
 }
+
 
 
 
