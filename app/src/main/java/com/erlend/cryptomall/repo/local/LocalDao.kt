@@ -57,5 +57,5 @@ interface LocalDao {
     suspend fun insertTransaction(AssetTransaction: AssetTransaction)
 
     @Query("SELECT * FROM asset_transaction WHERE accountId LIKE :accountId")
-    fun getTransactions(accountId: UUID): Flow<List<AssetTransaction>>
+    suspend fun getTransactions(accountId: UUID): List<AssetTransaction>
 }

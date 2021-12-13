@@ -4,9 +4,11 @@
 
 package com.erlend.cryptomall.view.ui.composables.asset
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -14,8 +16,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.erlend.cryptomall.domain.model.entities.Asset
+import com.erlend.cryptomall.view.ui.composables.BackHandler
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
 import com.erlend.cryptomall.view.viewModels.AccountViewModel
 
@@ -32,22 +37,26 @@ fun Overview(
     assetViewModel: AssetViewModel,
     accountViewModel: AccountViewModel
 ) {
-
     val assets by assetViewModel.getAssetsLocal().observeAsState()
     val query by assetViewModel.getQuery()
+
+    // Reference to activity to enable closing the app with back button
+    val activity = (LocalContext.current as? Activity)
 
     // onClick for the asset list, taking symbol as arg
     val onClickAsset: (String) -> Unit = {
         navController.navigate("currency/$it")
     }
 
-    // DEBUG
-    // Log.d("overview", assets.toString())
+    // Custom Back Button nav to self ()
+    BackHandler(onBack={
+        activity?.finish()
+    })
 
     Column {
-        AccountTopBar(accountViewModel)
+        AccountTopBar(accountViewModel, navController)
         AssetSearchBar(assetViewModel)
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().padding(0.dp, 8.dp)) {
             // Assets are filtered by the search input field
             MessageList(
                 assets!!.filter { it.name.contains(query, ignoreCase = true) ||

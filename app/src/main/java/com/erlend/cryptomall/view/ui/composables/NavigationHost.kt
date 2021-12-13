@@ -49,14 +49,14 @@ fun NavHost(
             )
         }
         composable(route = "portfolio") {
-            Transactions(
+            Portfolio(
                 navController = navController,
                 assetModel = assetViewModel,
                 accountViewModel = accountViewModel
             )
         }
         composable(route = "transactions") {
-            Portfolio(
+            Transactions(
                 navController = navController,
                 assetModel = assetViewModel,
                 accountViewModel = accountViewModel
@@ -88,7 +88,6 @@ fun NavHost(
                 backStackEntry ->
             backStackEntry.arguments?.getString("symbol")?.let {
                 Buy(
-                    navController = navController,
                     tradeViewModel = tradeViewModel,
                     it
                 )
@@ -103,8 +102,7 @@ fun NavHost(
                 backStackEntry ->
             backStackEntry.arguments?.getString("symbol")?.let {
                 Sell(
-                    navController = navController,
-                    tradeModel = tradeViewModel,
+                    tradeViewModel = tradeViewModel,
                     it
                 )
             }
