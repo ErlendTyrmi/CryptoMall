@@ -88,7 +88,6 @@ fun NavHost(
                 backStackEntry ->
             backStackEntry.arguments?.getString("symbol")?.let {
                 Buy(
-                    navController = navController,
                     tradeViewModel = tradeViewModel,
                     it
                 )
@@ -103,7 +102,6 @@ fun NavHost(
                 backStackEntry ->
             backStackEntry.arguments?.getString("symbol")?.let {
                 Sell(
-                    navController = navController,
                     tradeViewModel = tradeViewModel,
                     it
                 )

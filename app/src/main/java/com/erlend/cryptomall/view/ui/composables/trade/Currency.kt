@@ -9,10 +9,12 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
+import com.erlend.cryptomall.view.ui.composables.BackHandler
 import com.erlend.cryptomall.view.viewModels.TradeViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -22,11 +24,12 @@ import kotlinx.coroutines.launch
 // Buy, sell
 // Optional: Graph of fluctuations last 24h/week
 
+@ExperimentalComposeUiApi
 @Composable
 fun Currency(navController: NavHostController, tradeViewModel: TradeViewModel, symbol: String) {
 
     val asset by tradeViewModel.getAssetLocal().observeAsState()
-    val amountOwned = tradeViewModel.amountOwned.value
+    val amountOwned by tradeViewModel.amountOwned.observeAsState("0")
 
     // Show/hide buy sell menus
     val showBuy = remember { mutableStateOf(false) }
@@ -36,6 +39,11 @@ fun Currency(navController: NavHostController, tradeViewModel: TradeViewModel, s
     tradeViewModel.pullAssetRemote(symbol)
     tradeViewModel.updateAssetLocal(symbol)
     tradeViewModel.updateOwnedAmount()
+
+    // Custom Back Button nav
+    BackHandler(onBack={
+        navController.navigate("overview")
+    })
 
     Column() {
         TradeTopBar(asset)
@@ -51,10 +59,10 @@ fun Currency(navController: NavHostController, tradeViewModel: TradeViewModel, s
             )
             // Show buy and sell here instead of navigating
             if (showBuy.value && ! showSell.value)
-                Buy(navController, tradeViewModel, symbol)
+                Buy(tradeViewModel, symbol)
 
             if (showSell.value && ! showBuy.value)
-                Sell(navController, tradeViewModel, symbol)
+                Sell(tradeViewModel, symbol)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

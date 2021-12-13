@@ -4,6 +4,7 @@
 
 package com.erlend.cryptomall.view.ui.composables.asset
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.erlend.cryptomall.view.ui.composables.BackHandler
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
 import com.erlend.cryptomall.view.viewModels.AccountViewModel
 
@@ -28,6 +30,16 @@ import com.erlend.cryptomall.view.viewModels.AccountViewModel
 fun Portfolio(assetModel: AssetViewModel, navController: NavHostController, accountViewModel: AccountViewModel){
 
     val assets by accountViewModel.ownedAssets.observeAsState()
+
+    // Custom Back Button nav
+    BackHandler(onBack={
+        navController.navigate("overview")
+    })
+
+    // onClick for the portfolio asset list, taking symbol as arg
+    val onClickAsset: (String) -> Unit = {
+        navController.navigate("currency/$it")
+    }
 
     Column {
         AccountTopBar(accountViewModel, navController)
@@ -64,7 +76,7 @@ fun Portfolio(assetModel: AssetViewModel, navController: NavHostController, acco
             assets?.let {
                 LazyColumn {
                     items(it) { ass ->
-                        Row() {
+                        Row(Modifier.clickable(onClick = { onClickAsset(ass.assetSymbol) })) {
                             Text(modifier = Modifier.weight(2f), text = ass.assetSymbol)
                             Text(modifier = Modifier.weight(3f), text = ass.amountOwned.take(7))
                         }

@@ -86,13 +86,21 @@ class TradeViewModel @Inject constructor(
         }
     }
 
-    fun updateOwnedAmount(){
+    fun updateOwnedAmount() {
         viewModelScope.launch {
             asset.value?.let {
                 _amountOwned.value = pullOwnedAmount(it.symbol)?.amountOwned
-                if (amountOwned.value == null || amountOwned.value == "null"){_amountOwned.value = "0"}
+                if (amountOwned.value == null || amountOwned.value == "null") {
+                    _amountOwned.value = "0"
+                }
                 Log.d(TAG, "updateOwnedAmount: amountOwned is now ${amountOwned.value} ")
             }
+        }
+    }
+
+    fun updateDollarsOwned() {
+        viewModelScope.launch {
+            _dollarsOwned.value = pullOwnedAmount(referenceAsset)?.amountOwned
         }
     }
 
@@ -105,23 +113,23 @@ class TradeViewModel @Inject constructor(
             owned = ownedAsList.first()
         }
         Log.d(TAG, "getOwnedAmount: read from db: $owned")
+        if (owned != null) {
+            _amountOwned.value = owned.amountOwned
+        } else {
+            _amountOwned.value = "0"
+        }
+        Log.d(TAG, "pullOwnedAmount: Updated owned amount to ${amountOwned.value}")
         return owned
     }
 
-    fun updateDollarsOwned(){
-        viewModelScope.launch {
-            _dollarsOwned.value = pullOwnedAmount(referenceAsset)?.amountOwned
-        }
-    }
-
-    fun checkDollarsOwned(amount: String): Boolean {
+    fun checkIfAffordsInDollars(amount: String): Boolean {
         // False if nothing entered
         if (amount.isEmpty()) return false
 
         // Else if can't parse string
-        try{
+        try {
             amount.toBigDecimal()
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Log.d(TAG, "checkDraft: Cannot convert amount: '$amount' to BigDecimal")
             return false
         }
@@ -132,8 +140,10 @@ class TradeViewModel @Inject constructor(
                 dollarsOwned.value != null
                         && price != null
                         && dollarsOwned.value!!.toBigDecimal()
-                .compareTo(amount.toBigDecimal().times(price.toBigDecimal())) > -1 // If enough cash to buy
-        )
+                    .compareTo(
+                        amount.toBigDecimal().times(price.toBigDecimal())
+                    ) > -1 // If enough cash to buy
+                )
     }
 
     fun getCurrentTotalPrice(amount: String): String {
@@ -142,18 +152,18 @@ class TradeViewModel @Inject constructor(
         return rounded.toPlainString()
     }
 
-    fun buy(buySymbol: String, amount: String){
+    fun buy(buySymbol: String, amount: String) {
         // Calculate price
         val price = (asset.value?.priceUsd?.toBigDecimal()?.times(amount.toBigDecimal()))
         viewModelScope.launch {
             // Check draft, make Transaction
-            if (checkDollarsOwned(amount))
+            if (checkIfAffordsInDollars(amount))
                 makeTransaction(buySymbol, referenceAsset, amount, price.toString())
         }
     }
 
     fun sell(sellSymbol: String, amount: String) {
-        if (asset.value != null){
+        if (asset.value != null) {
             val assetCopy = asset.value!!
 
             // Calculate price
@@ -165,17 +175,28 @@ class TradeViewModel @Inject constructor(
 
             // Check draft, make Transaction
             viewModelScope.launch {
-                val owned = amountOwned.value?.toBigDecimal() ?: BigDecimal("0")
-                Log.d(TAG, "sell: Before transaction, owned is $owned, amount is $amount, price is $price. ")
-                if (owned >= amount.toBigDecimal()){
+                if (checkOwnedAssetAmountMoreThanOrEqual(amount)) {
                     makeTransaction(
                         buySymbol = referenceAsset, // buying dollars
                         sellSymbol = sellSymbol,
                         bought = price.toPlainString(), // in dollars
-                        sold = amount) // in currency
-             }
+                        sold = amount
+                    ) // in currency
+                }
             }
         }
+    }
+
+    fun checkOwnedAssetAmountMoreThanOrEqual(amountString: String): Boolean {
+        updateOwnedAmount()
+        // Return false if no number entered
+        if (amountString ==  ""){ return false }
+
+        val amount = amountString.toBigDecimal()
+        val owned = amountOwned.value?.toBigDecimal() ?: BigDecimal("0")
+
+        Log.d(TAG, "checkOwnedAssetAmountMoreThan: Comparing $owned more than ${amountString.toString()}")
+        return owned >= amount
     }
 
     // Selling is buying dollars :-)
@@ -223,7 +244,7 @@ class TradeViewModel @Inject constructor(
             val newBoughtAsset = AssetAmount(id, buySymbol, newBoughtBalance.toString())
             Log.d(TAG, "makeTransaction: inserting $newBoughtAsset")
             db.insertOwnedAsset(newBoughtAsset).let {
-                // Debug log result
+                // Check result
                 val updatedAsset = db.getOwnedAsset(id, buySymbol).first()
                 Log.d(TAG, "makeTransaction: Updated asset: $updatedAsset")
                 _amountOwned.value = updatedAsset.amountOwned

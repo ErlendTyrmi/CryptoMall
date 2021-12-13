@@ -16,7 +16,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.erlend.cryptomall.R
 import com.erlend.cryptomall.view.viewModels.AccountViewModel
@@ -55,6 +57,12 @@ fun AccountTopBar(accountViewModel: AccountViewModel, navController: NavControll
                     .padding(16.dp)
                     .fillMaxWidth(0.8f),
             ) {
+                Text(
+                    text = "Your account",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+
+                )
                 Text(text = "Account: *${id.value.toString().takeLast(6)}")
                 Text(text = "Points (USD): ${points.value}")
             }

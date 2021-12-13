@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.erlend.cryptomall.view.ui.composables.BackHandler
 import com.erlend.cryptomall.view.viewModels.AssetViewModel
 import com.erlend.cryptomall.view.viewModels.AccountViewModel
 import java.nio.file.Files.size
@@ -32,6 +33,11 @@ fun Transactions(navController: NavHostController, assetModel: AssetViewModel, a
     val transactions by accountViewModel.transactions.observeAsState()
     accountViewModel.updateTransactions()
 
+    // Custom Back Button nav
+    BackHandler(onBack={
+        navController.navigate("portfolio")
+    })
+
     Column {
         AccountTopBar(accountViewModel, navController)
 
@@ -44,7 +50,7 @@ fun Transactions(navController: NavHostController, assetModel: AssetViewModel, a
                 modifier = Modifier.padding(0.dp, 16.dp),
             )
 
-            transactions?.let {
+            transactions?.reversed()?.let {
                 LazyColumn {
                     items(it) { trans ->
 
